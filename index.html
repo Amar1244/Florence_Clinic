@@ -39,6 +39,25 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--tb);overflow
 @keyframes leafFall{0%{opacity:0;top:-30px;transform:rotate(0deg) translateX(0)}5%{opacity:.5}90%{opacity:.3}100%{opacity:0;top:105%;transform:rotate(540deg) translateX(60px)}}
 @keyframes pulse{0%,100%{box-shadow:0 4px 18px rgba(0,0,0,.15)}50%{box-shadow:0 4px 28px rgba(0,0,0,.28),0 0 0 8px rgba(255,255,255,.08)}}
 
+/* ── NEW ANIMATION KEYFRAMES ── */
+
+/* 1. Typewriter cursor blink */
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* 2. Word swap slide */
+@keyframes wordIn{0%{opacity:0;transform:translateY(100%)}15%{opacity:1;transform:translateY(0)}85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-100%)}}
+
+/* 3. Stethoscope SVG draw */
+@keyframes drawStroke{from{stroke-dashoffset:800}to{stroke-dashoffset:0}}
+@keyframes fadeInDot{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+
+/* 4. DNA helix */
+@keyframes dnaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes dnaRotate{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
+@keyframes dnaRung{0%{opacity:0;transform:scaleX(0)}100%{opacity:1;transform:scaleX(1)}}
+
+/* 5. Parallax handled in JS */
+
 /* scroll reveal */
 .rv{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
 .rv.v{opacity:1;transform:translateY(0)}
@@ -50,12 +69,12 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--tb);overflow
 .floats{position:fixed;bottom:26px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:11px;align-items:flex-end}
 .fb{display:flex;align-items:center;gap:9px;padding:13px 20px;border-radius:50px;font-family:'Jost',sans-serif;font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .fb-wa{background:var(--green);color:#fff;box-shadow:0 4px 18px rgba(37,211,102,.4);animation:pulse 3s ease-in-out infinite}
-.fb-wa:hover{transform:scale(1.08) translateY(-2px);box-shadow:0 8px 28px rgba(37,211,102,.55)}
+.fb-wa:hover{transform:scale(1.08) translateY(-2px)}
 .fb-em{background:var(--red);color:#fff;box-shadow:0 4px 18px rgba(192,80,74,.4);animation:pulse 3s 1s ease-in-out infinite}
 .fb-em:hover{transform:scale(1.08) translateY(-2px)}
 
 /* ══════════════════════════
-   NAVBAR + HAMBURGER
+   NAVBAR
 ══════════════════════════ */
 nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:68px;padding:0 52px;display:flex;align-items:center;justify-content:space-between;background:rgba(238,244,251,.97);backdrop-filter:blur(20px);border-bottom:1.5px solid var(--br);transition:box-shadow .3s}
 nav.sc{box-shadow:0 4px 26px var(--sh)}
@@ -63,23 +82,17 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .nem{width:40px;height:40px;background:linear-gradient(145deg,var(--blue),var(--blue2));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 3px 10px var(--sh)}
 .nt{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--th);line-height:1.1}
 .nt small{display:block;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:2.5px;font-weight:600;color:var(--ts);text-transform:uppercase;margin-top:1px}
-
-/* Desktop nav links */
 .nl{display:flex;gap:2px;list-style:none;align-items:center}
 .nl a{padding:8px 15px;font-size:14.5px;font-weight:600;color:var(--tb);text-decoration:none;border-radius:8px;transition:all .2s}
 .nl a:hover,.nl a.on{color:var(--blue2);background:var(--bluep);font-weight:700}
 .nwa{background:var(--green)!important;color:#fff!important;padding:9px 18px!important;border-radius:50px!important;display:flex!important;align-items:center;gap:7px;font-weight:700!important;font-size:13.5px!important}
 .nwa:hover{background:#1aaa50!important;transform:translateY(-1px)!important}
-
-/* Hamburger button */
 .ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:none;background:transparent;z-index:1100;border-radius:8px;transition:background .2s}
 .ham:hover{background:var(--bluep)}
 .ham-line{display:block;width:24px;height:2.5px;background:var(--th);border-radius:4px;transition:all .35s cubic-bezier(.77,0,.175,1)}
 .ham.open .ham-line:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
 .ham.open .ham-line:nth-child(2){opacity:0;transform:scaleX(0)}
 .ham.open .ham-line:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
-
-/* Mobile drawer */
 .mob-menu{position:fixed;top:68px;left:0;right:0;background:rgba(238,244,251,.98);backdrop-filter:blur(22px);border-bottom:1.5px solid var(--br);z-index:999;padding:20px 22px 28px;transform:translateY(-110%);opacity:0;transition:transform .38s cubic-bezier(.77,0,.175,1),opacity .3s ease;box-shadow:0 12px 40px var(--sh)}
 .mob-menu.open{transform:translateY(0);opacity:1}
 .mob-menu ul{list-style:none;display:flex;flex-direction:column;gap:4px}
@@ -88,7 +101,7 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .mob-wa{display:flex!important;align-items:center;gap:9px;background:var(--green)!important;color:#fff!important;border-radius:50px!important;padding:14px 20px!important;margin-top:10px;font-size:15px!important;border:none!important;justify-content:center}
 
 /* ══════════════════════════
-   SHARED STYLES
+   SHARED
 ══════════════════════════ */
 .sec{padding:96px 52px}
 .sec-in{max-width:1180px;margin:0 auto}
@@ -104,18 +117,16 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .btn-g:hover{background:var(--blue);color:#fff;transform:translateY(-2px)}
 
 /* ══════════════════════════
-   HERO SECTION
+   HERO
 ══════════════════════════ */
 .hero{min-height:100vh;padding-top:68px;background:linear-gradient(150deg,#e4f0fc 0%,#d8e9f8 35%,#cce1f4 65%,#e2eef8 100%);position:relative;overflow:hidden;display:flex;align-items:center}
 
-/* — Watercolour blobs — */
 .blob-bg{position:absolute;inset:0;pointer-events:none;z-index:0}
 .blob{position:absolute;border-radius:60% 40% 70% 30% / 50% 60% 40% 70%;animation:blobPulse 8s ease-in-out infinite}
 .blob-1{width:580px;height:480px;top:-110px;right:-130px;background:radial-gradient(ellipse,rgba(160,210,245,.4) 0%,rgba(160,210,245,.06) 70%)}
 .blob-2{width:440px;height:390px;bottom:-90px;left:-110px;background:radial-gradient(ellipse,rgba(160,230,210,.32) 0%,rgba(160,230,210,.05) 70%);animation-delay:2s;border-radius:40% 60% 30% 70%}
 .blob-3{width:330px;height:310px;top:38%;left:36%;background:radial-gradient(ellipse,rgba(215,190,220,.2) 0%,rgba(215,190,220,.04) 70%);animation-delay:4s;border-radius:70% 30% 50% 50%}
 
-/* — Floating Medical Equipment — */
 .med-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
 .med-item{position:absolute;opacity:.075;filter:drop-shadow(0 4px 8px rgba(30,80,150,.14))}
 .med-item:nth-child(1){top:8%;left:5%;animation:float1 7s ease-in-out infinite}
@@ -127,24 +138,23 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .med-item:nth-child(7){top:30%;left:47%;animation:float3 12s ease-in-out infinite}
 .med-item:nth-child(8){top:70%;left:30%;animation:float1 8.5s ease-in-out infinite reverse;animation-delay:2s}
 
-/* — Falling Leaves — */
 .leaves-wrap{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .leaf{position:absolute;top:-30px;opacity:0;animation:leafFall linear infinite}
-.leaf:nth-child(1){left:9%;width:10px;height:10px;animation-duration:8s;animation-delay:0s}
+.leaf:nth-child(1){left:9%;width:10px;height:10px;animation-duration:8s}
 .leaf:nth-child(2){left:24%;width:13px;height:13px;animation-duration:10s;animation-delay:2s}
 .leaf:nth-child(3){left:44%;width:9px;height:9px;animation-duration:7s;animation-delay:4s}
 .leaf:nth-child(4){left:64%;width:12px;height:12px;animation-duration:12s;animation-delay:1s}
 .leaf:nth-child(5){left:79%;width:10px;height:10px;animation-duration:9s;animation-delay:3s}
 .leaf:nth-child(6){left:91%;width:8px;height:8px;animation-duration:11s;animation-delay:5s}
 
-/* — Rotating ring — */
 .hr{position:absolute;top:50%;right:5%;transform:translateY(-50%);width:540px;height:540px;border:1.5px solid rgba(58,127,193,.12);border-radius:50%;pointer-events:none;animation:rot 70s linear infinite;z-index:0}
 .hr::after{content:'';position:absolute;top:32px;left:32px;right:32px;bottom:32px;border:1px solid rgba(58,127,193,.07);border-radius:50%}
-/* Ambient orbs */
 .ho1{position:absolute;top:-100px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(58,127,193,.15) 0%,transparent 68%);border-radius:50%;animation:fly 10s ease-in-out infinite;pointer-events:none;z-index:0}
 .ho2{position:absolute;bottom:-80px;left:-60px;width:380px;height:380px;background:radial-gradient(circle,rgba(196,154,85,.1) 0%,transparent 68%);border-radius:50%;animation:fly 12s ease-in-out infinite reverse;pointer-events:none;z-index:0}
 
-/* Hero grid */
+/* ── PARALLAX LAYER ── */
+.parallax-bg{position:absolute;inset:-80px;pointer-events:none;z-index:0;will-change:transform}
+
 .hgrid{max-width:1180px;margin:0 auto;padding:80px 52px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1;width:100%}
 .hl{animation:fu .9s ease both}
 .hbadge{display:inline-flex;align-items:center;gap:0;background:rgba(255,255,255,.92);border:1.5px solid rgba(34,197,94,.35);border-radius:50px;padding:0;font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue2);margin-bottom:24px;backdrop-filter:blur(8px);overflow:hidden;box-shadow:0 3px 14px rgba(34,197,94,.18)}
@@ -153,15 +163,24 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .hbadge-text{padding:0 16px 0 12px;display:flex;align-items:center;gap:8px}
 .hdot{width:6px;height:6px;background:#22c55e;border-radius:50%;animation:blink 1.5s infinite;flex-shrink:0}
 .hscript{font-family:'Dancing Script',cursive;font-size:30px;color:var(--blue2);display:block;margin-bottom:15px;font-weight:700}
+
+/* ── TYPEWRITER ── */
 .htitle{font-family:'Cormorant Garamond',serif;font-size:clamp(42px,5.5vw,68px);font-weight:700;line-height:1.07;color:var(--th);margin-bottom:20px}
 .htitle em{font-style:italic;color:var(--blue);display:block}
+.typewriter-wrap{display:inline-block;position:relative}
+.typewriter-text{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--blue)}
+.typewriter-cursor{display:inline-block;width:3px;height:0.85em;background:var(--blue);margin-left:2px;vertical-align:middle;animation:cursorBlink .7s infinite}
+
+/* ── WORD SWAP ── */
+.word-swap-wrap{display:inline-flex;overflow:hidden;vertical-align:bottom;height:1.15em;position:relative}
+.swap-word{position:absolute;left:0;white-space:nowrap;font-style:italic;color:var(--blue);font-family:'Cormorant Garamond',serif;font-weight:700}
+
 .hdesc{font-size:17px;color:var(--tb);line-height:1.85;max-width:470px;margin-bottom:36px;font-weight:400}
 .hbtns{display:flex;gap:13px;flex-wrap:wrap}
 .hchips{display:flex;gap:9px;flex-wrap:wrap;margin-top:30px}
 .chip{background:rgba(255,255,255,.82);border:1.5px solid rgba(58,127,193,.25);border-radius:50px;padding:7px 16px;font-size:13px;font-weight:700;color:var(--blue2);transition:all .22s;cursor:default}
 .chip:hover{background:var(--blue);color:#fff;transform:translateY(-2px)}
 
-/* Hero right card */
 .hright{animation:fu .9s .2s ease both}
 .hcard{background:rgba(255,255,255,.88);backdrop-filter:blur(22px);border:1.5px solid rgba(58,127,193,.22);border-radius:26px;padding:34px;box-shadow:0 16px 56px var(--sh)}
 .hct{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--th);margin-bottom:20px;display:flex;align-items:center;gap:8px}
@@ -174,12 +193,33 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .hcib{margin-left:auto;background:rgba(34,197,94,.16);border:1px solid rgba(34,197,94,.35);color:#0f7030;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:50px;white-space:nowrap}
 
 /* ══════════════════════════
-   ECG STRIP
+   ECG
 ══════════════════════════ */
 .ecg{background:linear-gradient(90deg,var(--bg2),var(--bg3),var(--bg2));padding:13px 0;overflow:hidden}
 .ecg svg{width:100%;height:44px;display:block}
 .eg{stroke:rgba(58,127,193,.3);stroke-width:5;fill:none;stroke-dasharray:1800;stroke-dashoffset:1800;animation:ecgd 4s linear infinite;filter:blur(3px)}
 .el{stroke:var(--blue);stroke-width:2.5;fill:none;stroke-dasharray:1800;stroke-dashoffset:1800;animation:ecgd 4s linear infinite}
+
+/* ══════════════════════════
+   STETHOSCOPE — BG + OVERLAY
+══════════════════════════ */
+.steth-sec{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--blue2),var(--blue3));min-height:420px;display:flex;align-items:center}
+.steth-bg-svg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0}
+.steth-bg-svg svg{width:auto;height:130%;opacity:.18;animation:dnaFloat 5s ease-in-out infinite}
+.steth-overlay{position:relative;z-index:1;width:100%;padding:72px 52px}
+.steth-content{max-width:700px;margin:0 auto;text-align:center}
+.steth-path{stroke-dasharray:800;stroke-dashoffset:800}
+.steth-circle{opacity:0;transform:scale(0);transform-origin:center}
+
+/* ══════════════════════════
+   DNA — BG + OVERLAY
+══════════════════════════ */
+.dna-sec{position:relative;overflow:hidden;background:var(--bg);min-height:420px;display:flex;align-items:center}
+.dna-bg-svg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0}
+.dna-bg-svg svg{width:auto;height:130%;opacity:.18;animation:dnaFloat 4s ease-in-out infinite}
+.dna-overlay{position:relative;z-index:1;width:100%;padding:72px 52px}
+.dna-content{max-width:720px;margin:0 auto;text-align:center}
+
 
 /* ══════════════════════════
    FEATURED SERVICES
@@ -202,9 +242,7 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .fct-dot{width:5px;height:5px;background:currentColor;border-radius:50%}
 .view-all-wrap{text-align:center;position:relative;z-index:1}
 
-/* ══════════════════════════
-   WHY CHOOSE US
-══════════════════════════ */
+/* WHY */
 .why-sec{background:linear-gradient(145deg,var(--bg3) 0%,var(--bg2) 60%,var(--bg) 100%);position:relative;overflow:hidden}
 .why-blob{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(58,127,193,.05) 0%,transparent 65%);border-radius:50%;pointer-events:none;animation:blobPulse 14s ease-in-out infinite}
 .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;position:relative;z-index:1}
@@ -214,20 +252,18 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .wico{width:48px;height:48px;min-width:48px;background:linear-gradient(145deg,var(--blue),var(--blue2));border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 13px var(--sh)}
 .wcard h4{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--th);margin-bottom:6px}
 .wcard p{font-size:14.5px;color:var(--ts);line-height:1.75;font-weight:400}
-.wpanel{background:linear-gradient(155deg,#fce4ec,#f8bbd0,#f48fb1);border-radius:26px;padding:46px 38px;color:#5d1a2e;position:relative;overflow:hidden;box-shadow:0 16px 54px rgba(244,143,177,.35),0 4px 20px rgba(248,187,208,.4)}
+.wpanel{background:linear-gradient(155deg,#fce4ec,#f8bbd0,#f48fb1);border-radius:26px;padding:46px 38px;position:relative;overflow:hidden;box-shadow:0 16px 54px rgba(244,143,177,.35)}
 .wpanel::before{content:'"';position:absolute;top:-30px;left:14px;font-family:'Cormorant Garamond',serif;font-size:160px;color:rgba(255,255,255,.5);line-height:1;pointer-events:none}
 .wpanel::after{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(255,255,255,.32) 0%,transparent 70%);border-radius:50%;pointer-events:none}
 .wqt{font-family:'Cormorant Garamond',serif;font-size:21px;font-style:italic;line-height:1.7;color:#4a1220;margin-bottom:22px;position:relative;z-index:1;font-weight:600}
 .wat{font-size:12px;color:#9c4060;letter-spacing:1.5px;text-transform:uppercase;position:relative;z-index:1;font-weight:700}
 .wvals{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px;position:relative;z-index:1}
-.wv{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);border-radius:14px;padding:17px;text-align:center;transition:all .25s;cursor:default;backdrop-filter:blur(6px)}
-.wv:hover{background:rgba(255,255,255,.8);transform:translateY(-3px);box-shadow:0 6px 18px rgba(244,143,177,.3)}
+.wv{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);border-radius:14px;padding:17px;text-align:center;transition:all .25s;cursor:default}
+.wv:hover{background:rgba(255,255,255,.8);transform:translateY(-3px)}
 .wv span{font-size:24px;display:block;margin-bottom:7px}
 .wv p{font-size:13px;color:#5d1a2e;font-weight:800}
 
-/* ══════════════════════════
-   FOOTER
-══════════════════════════ */
+/* FOOTER */
 footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 52px 28px}
 .ftin{max-width:1180px;margin:0 auto}
 .ftg{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:44px;margin-bottom:44px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.1)}
@@ -236,57 +272,32 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
 .ftsc{font-family:'Dancing Script',cursive;font-size:21px;color:#7ee8c8;margin-top:14px;display:block}
 .fth{font-size:10.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:16px}
 .ftul{list-style:none;display:flex;flex-direction:column;gap:10px}
-.ftul a{color:rgba(255,255,255,.7);text-decoration:none;font-size:14.5px;font-weight:400;transition:color .2s}
+.ftul a{color:rgba(255,255,255,.7);text-decoration:none;font-size:14.5px;transition:color .2s}
 .ftul a:hover{color:#fff}
 .ftbot{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;color:rgba(255,255,255,.5)}
 
-/* ══════════════════════════
-   RESPONSIVE
-══════════════════════════ */
+/* RESPONSIVE */
 @media(max-width:960px){
-  nav{padding:0 18px}
-  .nl{display:none}
-  .ham{display:flex}
-
+  nav{padding:0 18px}.nl{display:none}.ham{display:flex}
   .hgrid{grid-template-columns:1fr;gap:0;padding:50px 20px 60px}
-  .hright{display:none}
-  .hero{min-height:auto;padding-bottom:40px}
-  .htitle{font-size:clamp(36px,9vw,52px)}
-  .hdesc{font-size:15.5px;max-width:100%}
-
-  .sec{padding:60px 20px}
-  .feat-grid{grid-template-columns:1fr 1fr}
+  .hright{display:none}.hero{min-height:auto;padding-bottom:40px}
+  .htitle{font-size:clamp(36px,9vw,52px)}.hdesc{font-size:15.5px;max-width:100%}
+  .sec{padding:60px 20px}.feat-grid{grid-template-columns:1fr 1fr}
   .wgrid{grid-template-columns:1fr;gap:28px}
-
-  .ftg{grid-template-columns:1fr;gap:26px}
-  .ftbot{flex-direction:column;gap:9px;text-align:center}
-  footer{padding:44px 20px 22px}
-
-  .floats{bottom:16px;right:12px}
-  .fb{padding:10px 13px;font-size:12px}
-
-  .hr{width:320px;height:320px;right:0;opacity:.5}
-  .blob-1{width:340px;height:300px}
-  .blob-2{width:260px;height:240px}
-  .blob-3{display:none}
-  .med-item:nth-child(2),.med-item:nth-child(4){display:none}
+  .steth-overlay,.dna-overlay{padding:52px 20px}
+  .ftg{grid-template-columns:1fr;gap:26px}.ftbot{flex-direction:column;gap:9px;text-align:center}
+  footer{padding:44px 20px 22px}.floats{bottom:16px;right:12px}.fb{padding:10px 13px;font-size:12px}
 }
 @media(max-width:600px){
-  .feat-grid{grid-template-columns:1fr}
-  .hbtns{flex-direction:column}
-  .btn-p,.btn-g{justify-content:center}
-  .wvals{grid-template-columns:1fr 1fr}
-  .hchips{gap:7px}
-  .chip{font-size:12px;padding:6px 12px}
-  .ey{font-size:10.5px}
-  .sh{font-size:clamp(26px,8vw,40px)}
-  .ss{font-size:15px}
+  .feat-grid{grid-template-columns:1fr}.hbtns{flex-direction:column}
+  .btn-p,.btn-g{justify-content:center}.hchips{gap:7px}.chip{font-size:12px}
+
 }
 </style>
 </head>
 <body>
 
-<!-- FLOATING BUTTONS -->
+<!-- FLOAT BUTTONS -->
 <div class="floats">
   <a href="https://wa.me/917270945129?text=Hello%2C%20I%20need%20home%20nursing%20care" target="_blank" class="fb fb-wa">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -304,31 +315,22 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
     <div class="nem">🌿</div>
     <div class="nt">Florence Nightingale<small>Nursing · Home Care</small></div>
   </a>
-
-  <!-- Desktop links -->
   <ul class="nl">
     <li><a href="index.html" class="on">Home</a></li>
     <li><a href="services.html">Services</a></li>
     <li><a href="doctors.html">Our Doctors</a></li>
     <li><a href="about.html">About Us</a></li>
     <li><a href="contact.html">Contact</a></li>
-    <li>
-      <a href="https://wa.me/917270945129?text=Hello%2C%20I%20need%20home%20nursing%20care" target="_blank" class="nwa">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        WhatsApp Us
-      </a>
-    </li>
+    <li><a href="https://wa.me/917270945129?text=Hello%2C%20I%20need%20home%20nursing%20care" target="_blank" class="nwa">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp Us
+    </a></li>
   </ul>
-
-  <!-- Hamburger (mobile) -->
   <button class="ham" id="ham" aria-label="Open menu" onclick="toggleMenu()">
-    <span class="ham-line"></span>
-    <span class="ham-line"></span>
-    <span class="ham-line"></span>
+    <span class="ham-line"></span><span class="ham-line"></span><span class="ham-line"></span>
   </button>
 </nav>
 
-<!-- Mobile Drawer -->
 <div class="mob-menu" id="mob-menu">
   <ul>
     <li><a href="index.html" class="on">🏠 Home</a></li>
@@ -336,130 +338,70 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
     <li><a href="doctors.html">👨‍⚕️ Our Doctors</a></li>
     <li><a href="about.html">🌿 About Us</a></li>
     <li><a href="contact.html">📍 Contact</a></li>
-    <li>
-      <a href="https://wa.me/917270945129?text=Hello%2C%20I%20need%20home%20nursing%20care" target="_blank" class="mob-wa">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        WhatsApp Us Now
-      </a>
-    </li>
+    <li><a href="https://wa.me/917270945129" target="_blank" class="mob-wa">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp Us Now
+    </a></li>
   </ul>
 </div>
 
 <!-- ════════ HERO ════════ -->
-<section class="hero">
-
-  <!-- Watercolour blobs -->
-  <div class="blob-bg">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-  </div>
-
-  <!-- Ambient orbs -->
-  <div class="ho1"></div>
-  <div class="ho2"></div>
-
-  <!-- Rotating ring -->
-  <div class="hr"></div>
-
-  <!-- Falling leaves -->
-  <div class="leaves-wrap">
-    <div class="leaf"><svg viewBox="0 0 20 20"><path d="M10 1C15 5 18 10 10 19C2 10 5 5 10 1Z" fill="#3a7fc1" opacity=".7"/></svg></div>
-    <div class="leaf"><svg viewBox="0 0 16 20"><path d="M8 0C14 6 14 14 8 20C2 14 2 6 8 0Z" fill="#1f5490" opacity=".6"/></svg></div>
-    <div class="leaf"><svg viewBox="0 0 20 20"><path d="M10 1C16 4 17 12 10 19C3 12 4 4 10 1Z" fill="#3a7fc1" opacity=".55"/></svg></div>
-    <div class="leaf"><svg viewBox="0 0 18 20"><path d="M9 0C15 5 15 15 9 20C3 15 3 5 9 0Z" fill="#c5dcf0" opacity=".75"/></svg></div>
-    <div class="leaf"><svg viewBox="0 0 14 18"><path d="M7 0C12 5 12 13 7 18C2 13 2 5 7 0Z" fill="#1f5490" opacity=".5"/></svg></div>
-    <div class="leaf"><svg viewBox="0 0 20 22"><path d="M10 1C17 5 18 14 10 21C2 14 3 5 10 1Z" fill="#3a7fc1" opacity=".45"/></svg></div>
-  </div>
-
-  <!-- Floating medical equipment -->
-  <div class="med-bg">
-    <!-- Stethoscope -->
-    <div class="med-item" style="width:82px">
-      <svg viewBox="0 0 80 80" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round">
-        <circle cx="40" cy="20" r="8" fill="rgba(58,127,193,.18)"/>
-        <path d="M32 20 Q20 20 18 32 Q16 44 24 48 Q32 52 38 46 Q44 40 44 32 L44 60 Q44 68 52 68 Q60 68 60 60 L60 56"/>
-        <circle cx="60" cy="52" r="5" fill="rgba(58,127,193,.18)"/>
-      </svg>
+<section class="hero" id="hero">
+  <div class="parallax-bg" id="parallaxBg">
+    <div class="blob-bg">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
     </div>
-    <!-- Syringe -->
-    <div class="med-item" style="width:72px">
-      <svg viewBox="0 0 70 70" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round">
-        <rect x="18" y="28" width="34" height="14" rx="3" fill="rgba(180,220,245,.3)"/>
-        <line x1="35" y1="28" x2="35" y2="42"/><line x1="28" y1="31" x2="28" y2="39"/><line x1="42" y1="31" x2="42" y2="39"/>
-        <path d="M52 28 L58 22 M52 42 L58 48"/>
-        <path d="M18 32 L8 32 M18 38 L8 38 M8 35 L4 31 M8 35 L4 39"/>
-      </svg>
+    <div class="ho1"></div>
+    <div class="ho2"></div>
+    <div class="hr"></div>
+    <div class="leaves-wrap">
+      <div class="leaf"><svg viewBox="0 0 20 20"><path d="M10 1C15 5 18 10 10 19C2 10 5 5 10 1Z" fill="#3a7fc1" opacity=".7"/></svg></div>
+      <div class="leaf"><svg viewBox="0 0 16 20"><path d="M8 0C14 6 14 14 8 20C2 14 2 6 8 0Z" fill="#1f5490" opacity=".6"/></svg></div>
+      <div class="leaf"><svg viewBox="0 0 20 20"><path d="M10 1C16 4 17 12 10 19C3 12 4 4 10 1Z" fill="#3a7fc1" opacity=".55"/></svg></div>
+      <div class="leaf"><svg viewBox="0 0 18 20"><path d="M9 0C15 5 15 15 9 20C3 15 3 5 9 0Z" fill="#c5dcf0" opacity=".75"/></svg></div>
+      <div class="leaf"><svg viewBox="0 0 14 18"><path d="M7 0C12 5 12 13 7 18C2 13 2 5 7 0Z" fill="#1f5490" opacity=".5"/></svg></div>
+      <div class="leaf"><svg viewBox="0 0 20 22"><path d="M10 1C17 5 18 14 10 21C2 14 3 5 10 1Z" fill="#3a7fc1" opacity=".45"/></svg></div>
     </div>
-    <!-- Heart pulse — with heartbeat animation -->
-    <div class="med-item" style="width:92px;animation:heartbeat 2s ease-in-out infinite!important">
-      <svg viewBox="0 0 90 60" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 30 L20 30 L28 14 L36 46 L44 22 L50 38 L56 30 L85 30"/>
-        <path d="M40 50 C30 42 15 35 15 22 C15 13 22 8 30 10 C35 11 40 16 40 16 C40 16 45 11 50 10 C58 8 65 13 65 22 C65 35 50 42 40 50Z" fill="rgba(58,127,193,.15)" stroke-width="2"/>
-      </svg>
-    </div>
-    <!-- Pill -->
-    <div class="med-item" style="width:66px">
-      <svg viewBox="0 0 65 65" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round">
-        <ellipse cx="32" cy="32" rx="20" ry="12" transform="rotate(-35 32 32)" fill="rgba(180,220,245,.22)"/>
-        <line x1="20" y1="22" x2="44" y2="42" transform="rotate(-35 32 32)"/>
-        <ellipse cx="32" cy="32" rx="10" ry="6" transform="rotate(-35 32 32)" fill="rgba(58,127,193,.2)"/>
-      </svg>
-    </div>
-    <!-- IV Drip bag -->
-    <div class="med-item" style="width:62px">
-      <svg viewBox="0 0 60 80" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round">
-        <path d="M20 10 Q10 25 10 40 Q10 58 30 58 Q50 58 50 40 Q50 25 40 10 Z" fill="rgba(180,220,245,.25)"/>
-        <line x1="30" y1="10" x2="30" y2="4"/><line x1="26" y1="4" x2="34" y2="4"/>
-        <line x1="30" y1="58" x2="30" y2="72"/>
-        <circle cx="30" cy="73" r="3" fill="rgba(58,127,193,.3)"/>
-        <path d="M22 35 Q25 30 30 35 Q35 40 38 35" fill="none"/>
-      </svg>
-    </div>
-    <!-- Thermometer -->
-    <div class="med-item" style="width:32px">
-      <svg viewBox="0 0 30 90" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round">
-        <rect x="10" y="5" width="10" height="60" rx="5" fill="rgba(180,220,245,.2)"/>
-        <rect x="12" y="35" width="6" height="30" rx="3" fill="rgba(58,127,193,.3)"/>
-        <circle cx="15" cy="75" r="8" fill="rgba(58,127,193,.28)"/>
-        <line x1="20" y1="20" x2="24" y2="20"/><line x1="20" y1="30" x2="24" y2="30"/><line x1="20" y1="40" x2="24" y2="40"/>
-      </svg>
-    </div>
-    <!-- First-Aid Cross -->
-    <div class="med-item" style="width:58px">
-      <svg viewBox="0 0 55 55" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round">
-        <rect x="20" y="8" width="15" height="39" rx="5" fill="rgba(255,255,255,.45)"/>
-        <rect x="8" y="20" width="39" height="15" rx="5" fill="rgba(255,255,255,.45)"/>
-        <rect x="20" y="8" width="15" height="39" rx="5"/>
-        <rect x="8" y="20" width="39" height="15" rx="5"/>
-        <circle cx="27" cy="27" r="5" fill="rgba(58,127,193,.22)"/>
-      </svg>
-    </div>
-    <!-- Lungs -->
-    <div class="med-item" style="width:78px">
-      <svg viewBox="0 0 75 70" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round">
-        <path d="M37 5 L37 20 M37 20 Q22 22 18 35 Q14 48 22 54 Q30 60 36 54 Q37 50 37 44 L37 20"/>
-        <path d="M37 20 Q52 22 56 35 Q60 48 52 54 Q44 60 38 54 Q37 50 37 44 L37 20"/>
-        <path d="M22 40 Q26 36 30 40" fill="none"/><path d="M44 40 Q48 36 52 40" fill="none"/>
-      </svg>
+    <div class="med-bg">
+      <div class="med-item" style="width:82px"><svg viewBox="0 0 80 80" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round"><circle cx="40" cy="20" r="8" fill="rgba(58,127,193,.18)"/><path d="M32 20 Q20 20 18 32 Q16 44 24 48 Q32 52 38 46 Q44 40 44 32 L44 60 Q44 68 52 68 Q60 68 60 60 L60 56"/><circle cx="60" cy="52" r="5" fill="rgba(58,127,193,.18)"/></svg></div>
+      <div class="med-item" style="width:72px"><svg viewBox="0 0 70 70" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round"><rect x="18" y="28" width="34" height="14" rx="3" fill="rgba(180,220,245,.3)"/><line x1="35" y1="28" x2="35" y2="42"/><line x1="28" y1="31" x2="28" y2="39"/><line x1="42" y1="31" x2="42" y2="39"/><path d="M52 28 L58 22 M52 42 L58 48"/><path d="M18 32 L8 32 M18 38 L8 38 M8 35 L4 31 M8 35 L4 39"/></svg></div>
+      <div class="med-item" style="width:92px;animation:heartbeat 2s ease-in-out infinite!important"><svg viewBox="0 0 90 60" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 30 L20 30 L28 14 L36 46 L44 22 L50 38 L56 30 L85 30"/><path d="M40 50 C30 42 15 35 15 22 C15 13 22 8 30 10 C35 11 40 16 40 16 C40 16 45 11 50 10 C58 8 65 13 65 22 C65 35 50 42 40 50Z" fill="rgba(58,127,193,.15)" stroke-width="2"/></svg></div>
+      <div class="med-item" style="width:66px"><svg viewBox="0 0 65 65" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round"><ellipse cx="32" cy="32" rx="20" ry="12" transform="rotate(-35 32 32)" fill="rgba(180,220,245,.22)"/><line x1="20" y1="22" x2="44" y2="42" transform="rotate(-35 32 32)"/><ellipse cx="32" cy="32" rx="10" ry="6" transform="rotate(-35 32 32)" fill="rgba(58,127,193,.2)"/></svg></div>
+      <div class="med-item" style="width:62px"><svg viewBox="0 0 60 80" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round"><path d="M20 10 Q10 25 10 40 Q10 58 30 58 Q50 58 50 40 Q50 25 40 10 Z" fill="rgba(180,220,245,.25)"/><line x1="30" y1="10" x2="30" y2="4"/><line x1="26" y1="4" x2="34" y2="4"/><line x1="30" y1="58" x2="30" y2="72"/><circle cx="30" cy="73" r="3" fill="rgba(58,127,193,.3)"/></svg></div>
+      <div class="med-item" style="width:32px"><svg viewBox="0 0 30 90" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round"><rect x="10" y="5" width="10" height="60" rx="5" fill="rgba(180,220,245,.2)"/><rect x="12" y="35" width="6" height="30" rx="3" fill="rgba(58,127,193,.3)"/><circle cx="15" cy="75" r="8" fill="rgba(58,127,193,.28)"/><line x1="20" y1="20" x2="24" y2="20"/><line x1="20" y1="30" x2="24" y2="30"/><line x1="20" y1="40" x2="24" y2="40"/></svg></div>
+      <div class="med-item" style="width:58px"><svg viewBox="0 0 55 55" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round"><rect x="20" y="8" width="15" height="39" rx="5" fill="rgba(255,255,255,.4)"/><rect x="8" y="20" width="39" height="15" rx="5" fill="rgba(255,255,255,.4)"/><rect x="20" y="8" width="15" height="39" rx="5"/><rect x="8" y="20" width="39" height="15" rx="5"/><circle cx="27" cy="27" r="5" fill="rgba(58,127,193,.22)"/></svg></div>
+      <div class="med-item" style="width:78px"><svg viewBox="0 0 75 70" fill="none" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round"><path d="M37 5 L37 20 M37 20 Q22 22 18 35 Q14 48 22 54 Q30 60 36 54 Q37 50 37 44 L37 20"/><path d="M37 20 Q52 22 56 35 Q60 48 52 54 Q44 60 38 54 Q37 50 37 44 L37 20"/><path d="M22 40 Q26 36 30 40" fill="none"/><path d="M44 40 Q48 36 52 40" fill="none"/></svg></div>
     </div>
   </div>
 
-  <!-- Hero content -->
   <div class="hgrid">
     <div class="hl">
       <div class="hbadge">
-        <div class="hbadge-cross">
-          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="2" width="4" height="16" rx="1.5" fill="white"/>
-            <rect x="2" y="8" width="16" height="4" rx="1.5" fill="white"/>
-          </svg>
-        </div>
+        <div class="hbadge-cross"><svg viewBox="0 0 20 20" fill="none"><rect x="8" y="2" width="4" height="16" rx="1.5" fill="white"/><rect x="2" y="8" width="16" height="4" rx="1.5" fill="white"/></svg></div>
         <div class="hbadge-text"><span class="hdot"></span> Available 24×7 · Ghaziabad, UP</div>
       </div>
       <span class="hscript">Your Health. Our Priority.</span>
-      <h1 class="htitle">Professional<br>Home Nursing<br><em>Care at Your Doorstep</em></h1>
-      <p class="hdesc">Compassionate, skilled nursing brought right to your home. From IV drips to physiotherapy — we care for your loved ones with warmth and expertise.</p>
+
+      <!-- TYPEWRITER + WORD SWAP TITLE -->
+      <h1 class="htitle">
+        Professional<br>
+        Home Nursing<br>
+        <!-- Word Swap -->
+        <span style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="font-style:italic;color:var(--blue);font-family:'Cormorant Garamond',serif">We Provide</span>
+          <span class="word-swap-wrap" id="wordSwap" style="min-width:220px">
+            <span class="swap-word" style="position:relative;display:block" id="swapVisible"></span>
+          </span>
+        </span>
+      </h1>
+
+      <!-- TYPEWRITER DESC -->
+      <p class="hdesc">
+        <span id="typewriterText"></span><span class="typewriter-cursor" id="twCursor"></span>
+      </p>
+
       <div class="hbtns">
         <a href="https://wa.me/917270945129?text=Hello%2C%20I%20need%20home%20nursing%20care" target="_blank" class="btn-p">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -488,13 +430,41 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
   </div>
 </section>
 
-<!-- ECG STRIP -->
+<!-- ECG -->
 <div class="ecg">
   <svg viewBox="0 0 1400 44" preserveAspectRatio="none">
     <polyline class="eg" points="0,22 120,22 200,22 230,4 252,42 274,4 296,22 380,22 500,22 580,22 610,4 632,42 654,4 676,22 760,22 880,22 960,22 990,4 1012,42 1034,4 1056,22 1140,22 1260,22 1340,22 1370,4 1392,42 1400,22"/>
     <polyline class="el" points="0,22 120,22 200,22 230,4 252,42 274,4 296,22 380,22 500,22 580,22 610,4 632,42 654,4 676,22 760,22 880,22 960,22 990,4 1012,42 1034,4 1056,22 1140,22 1260,22 1340,22 1370,4 1392,42 1400,22"/>
   </svg>
 </div>
+
+<!-- ════════ STETHOSCOPE SECTION — SVG BACKGROUND + TEXT OVERLAY ════════ -->
+<section class="steth-sec" id="stethSec">
+  <!-- Stethoscope SVG pinned as background -->
+  <div class="steth-bg-svg">
+    <svg id="stethSvg" viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path class="steth-path" id="sp1" d="M110 30 Q95 20 85 35 Q80 45 90 52" stroke="rgba(255,255,255,.25)" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path class="steth-path" id="sp2" d="M190 30 Q205 20 215 35 Q220 45 210 52" stroke="rgba(255,255,255,.25)" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path class="steth-path" id="sp3" d="M90 52 Q88 80 100 100 Q120 130 150 130 Q180 130 200 100 Q212 80 210 52" stroke="rgba(255,255,255,.22)" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path class="steth-path" id="sp4" d="M150 130 L150 200 Q150 240 180 260 Q210 275 220 260 Q228 245 218 235" stroke="rgba(255,255,255,.22)" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <circle class="steth-circle" id="sc1" cx="218" cy="220" r="28" stroke="rgba(144,216,245,.35)" stroke-width="5" fill="rgba(255,255,255,.06)"/>
+      <circle class="steth-circle" id="sc2" cx="218" cy="220" r="16" stroke="rgba(144,216,245,.25)" stroke-width="3" fill="rgba(255,255,255,.04)"/>
+      <line class="steth-path" id="sp5" x1="218" y1="208" x2="218" y2="232" stroke="rgba(144,216,245,.35)" stroke-width="3" stroke-linecap="round"/>
+      <line class="steth-path" id="sp6" x1="206" y1="220" x2="230" y2="220" stroke="rgba(144,216,245,.35)" stroke-width="3" stroke-linecap="round"/>
+      <circle class="steth-circle" id="sc3" cx="85" cy="35" r="7" fill="rgba(144,216,245,.3)" stroke="rgba(255,255,255,.2)" stroke-width="2"/>
+      <circle class="steth-circle" id="sc4" cx="215" cy="35" r="7" fill="rgba(144,216,245,.3)" stroke="rgba(255,255,255,.2)" stroke-width="2"/>
+      <circle class="steth-circle" id="sc5" cx="218" cy="220" r="38" stroke="rgba(144,216,245,.12)" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
+  <!-- Text overlay -->
+  <div class="steth-overlay">
+    <div class="steth-content">
+      <div class="ey rv" style="color:rgba(255,255,255,.7);justify-content:center">Our Impact</div>
+      <h2 class="rv d1" style="font-family:'Cormorant Garamond',serif;font-size:clamp(32px,5vw,56px);font-weight:700;color:#fff;text-align:center;margin-bottom:16px;line-height:1.15">Trusted by Families<br><em style="font-style:italic;color:#90d8f5">Across Ghaziabad</em></h2>
+      <p class="rv d2" style="font-size:16.5px;color:rgba(255,255,255,.85);line-height:1.85;text-align:center;max-width:600px;margin:0 auto">Every family we've served receives compassionate, skilled and dedicated home nursing care — around the clock, every single day.</p>
+    </div>
+  </div>
+</section>
 
 <!-- FEATURED SERVICES -->
 <section class="sec feat-sec">
@@ -505,45 +475,62 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
     <h2 class="sh rv d1">Home Nursing Care<br><em>Available 24/7</em></h2>
     <p class="ss rv d2">A glimpse of what we offer — all services delivered at your doorstep by trained professionals.</p>
     <div class="feat-grid">
-      <div class="feat-card rv d1">
-        <div class="fci">💉</div>
-        <div class="fcn">Injection & IV Drip</div>
-        <div class="fcd">Safe injections and IV drip setup at home by qualified nurses.</div>
-        <span class="fct"><span class="fct-dot"></span>24×7 Available</span>
-      </div>
-      <div class="feat-card rv d2">
-        <div class="fci">🩹</div>
-        <div class="fcn">Wound Dressing</div>
-        <div class="fcd">Expert wound care and sterile dressings to promote fast healing.</div>
-        <span class="fct"><span class="fct-dot"></span>24×7 Available</span>
-      </div>
-      <div class="feat-card rv d3">
-        <div class="fci">🏃</div>
-        <div class="fcn">Physiotherapy</div>
-        <div class="fcd">Certified physiotherapists providing rehab and mobility care at home.</div>
-        <span class="fct"><span class="fct-dot"></span>24×7 Available</span>
-      </div>
-      <div class="feat-card rv d1">
-        <div class="fci">🧪</div>
-        <div class="fcn">Pathology Lab Tests</div>
-        <div class="fcd">Home-based sample collection and diagnostic tests at your doorstep.</div>
-        <span class="fct"><span class="fct-dot"></span>24×7 Available</span>
-      </div>
-      <div class="feat-card rv d2">
-        <div class="fci">🫁</div>
-        <div class="fcn">Tracheostomy Care</div>
-        <div class="fcd">Skilled tracheostomy tube change and airway management at home.</div>
-        <span class="fct"><span class="fct-dot"></span>24×7 Available</span>
-      </div>
-      <div class="feat-card rv d3">
-        <div class="fci">🏥</div>
-        <div class="fcn">Medical Equipment</div>
-        <div class="fcd">All essential medical equipment supplied and set up at your home.</div>
-        <span class="fct"><span class="fct-dot"></span>24×7 Available</span>
-      </div>
+      <div class="feat-card rv d1"><div class="fci">💉</div><div class="fcn">Injection & IV Drip</div><div class="fcd">Safe injections and IV drip setup at home by qualified nurses.</div><span class="fct"><span class="fct-dot"></span>24×7 Available</span></div>
+      <div class="feat-card rv d2"><div class="fci">🩹</div><div class="fcn">Wound Dressing</div><div class="fcd">Expert wound care and sterile dressings to promote fast healing.</div><span class="fct"><span class="fct-dot"></span>24×7 Available</span></div>
+      <div class="feat-card rv d3"><div class="fci">🏃</div><div class="fcn">Physiotherapy</div><div class="fcd">Certified physiotherapists providing rehab and mobility care at home.</div><span class="fct"><span class="fct-dot"></span>24×7 Available</span></div>
+      <div class="feat-card rv d1"><div class="fci">🧪</div><div class="fcn">Pathology Lab Tests</div><div class="fcd">Home-based sample collection and diagnostic tests at your doorstep.</div><span class="fct"><span class="fct-dot"></span>24×7 Available</span></div>
+      <div class="feat-card rv d2"><div class="fci">🫁</div><div class="fcn">Tracheostomy Care</div><div class="fcd">Skilled tracheostomy tube change and airway management at home.</div><span class="fct"><span class="fct-dot"></span>24×7 Available</span></div>
+      <div class="feat-card rv d3"><div class="fci">🏥</div><div class="fcn">Medical Equipment</div><div class="fcd">All essential medical equipment supplied and set up at your home.</div><span class="fct"><span class="fct-dot"></span>24×7 Available</span></div>
     </div>
-    <div class="view-all-wrap rv">
-      <a href="services.html" class="btn-p">View All 12 Services &rarr;</a>
+    <div class="view-all-wrap rv"><a href="services.html" class="btn-p">View All 12 Services &rarr;</a></div>
+  </div>
+</section>
+
+<!-- ════════ DNA SECTION — SVG BACKGROUND + TEXT OVERLAY ════════ -->
+<section class="dna-sec" id="dnaSec">
+  <!-- DNA SVG pinned as background -->
+  <div class="dna-bg-svg">
+    <svg id="dnaSvg" viewBox="0 0 180 380" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <path id="dnaLeft" d="M30 10 C80 40 100 80 30 110 C-20 140 80 180 30 210 C-20 240 80 280 30 310 C-20 340 80 360 30 370" stroke="url(#dnaGrad1)" stroke-width="4" fill="none" stroke-linecap="round" opacity=".35"/>
+      <path id="dnaRight" d="M150 10 C100 40 80 80 150 110 C200 140 80 180 150 210 C200 240 80 280 150 310 C200 340 80 360 150 370" stroke="url(#dnaGrad2)" stroke-width="4" fill="none" stroke-linecap="round" opacity=".35"/>
+      <line class="dna-rung" x1="30" y1="10" x2="150" y2="10" stroke="rgba(58,127,193,.25)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="55" y1="42" x2="125" y2="42" stroke="rgba(107,196,154,.3)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="75" y1="72" x2="105" y2="72" stroke="rgba(244,143,177,.3)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="50" y1="103" x2="130" y2="103" stroke="rgba(58,127,193,.25)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="30" y1="130" x2="150" y2="130" stroke="rgba(107,196,154,.3)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="55" y1="162" x2="125" y2="162" stroke="rgba(244,143,177,.3)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="75" y1="192" x2="105" y2="192" stroke="rgba(58,127,193,.25)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="50" y1="223" x2="130" y2="223" stroke="rgba(107,196,154,.3)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="30" y1="250" x2="150" y2="250" stroke="rgba(244,143,177,.3)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="55" y1="282" x2="125" y2="282" stroke="rgba(58,127,193,.25)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="75" y1="312" x2="105" y2="312" stroke="rgba(107,196,154,.3)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="50" y1="343" x2="130" y2="343" stroke="rgba(244,143,177,.3)" stroke-width="2.5" stroke-linecap="round"/>
+      <line class="dna-rung" x1="30" y1="370" x2="150" y2="370" stroke="rgba(58,127,193,.25)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="30" cy="10" r="5" fill="#3a7fc1" opacity=".4"/>
+      <circle cx="150" cy="10" r="5" fill="#6bc49a" opacity=".4"/>
+      <circle cx="30" cy="110" r="5" fill="#f48fb1" opacity=".4"/>
+      <circle cx="150" cy="110" r="5" fill="#3a7fc1" opacity=".4"/>
+      <circle cx="30" cy="210" r="5" fill="#6bc49a" opacity=".4"/>
+      <circle cx="150" cy="210" r="5" fill="#f48fb1" opacity=".4"/>
+      <circle cx="30" cy="310" r="5" fill="#3a7fc1" opacity=".4"/>
+      <circle cx="150" cy="310" r="5" fill="#6bc49a" opacity=".4"/>
+      <defs>
+        <linearGradient id="dnaGrad1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3a7fc1"/><stop offset="50%" stop-color="#f48fb1"/><stop offset="100%" stop-color="#6bc49a"/>
+        </linearGradient>
+        <linearGradient id="dnaGrad2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6bc49a"/><stop offset="50%" stop-color="#3a7fc1"/><stop offset="100%" stop-color="#f48fb1"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+  <!-- Text overlay -->
+  <div class="dna-overlay">
+    <div class="dna-content">
+      <div class="ey rv" style="justify-content:center">Our Commitment</div>
+      <h2 class="rv d1" style="font-family:'Cormorant Garamond',serif;font-size:clamp(32px,5vw,56px);font-weight:700;color:var(--th);text-align:center;margin-bottom:16px;line-height:1.15">Built on the Science<br><em style="font-style:italic;color:var(--blue)">of Caring</em></h2>
+      <p class="rv d2" style="font-size:16.5px;color:var(--ts);line-height:1.85;text-align:center;max-width:640px;margin:0 auto 14px">Just like DNA carries the code of life, we carry the code of compassion in everything we do — every service, every visit, built on scientific precision and human warmth.</p>
+      <p class="rv d3" style="font-size:15px;color:var(--ts);text-align:center;max-width:540px;margin:0 auto">Our qualified pharmacists, CMS & ED trained professionals and EMTs bring clinical excellence right to your doorstep.</p>
     </div>
   </div>
 </section>
@@ -557,22 +544,10 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
     <p class="ss rv d2">Hospital-quality nursing at home — so your loved ones heal in comfort and peace.</p>
     <div class="wgrid">
       <div class="wstack">
-        <div class="wcard rv d1">
-          <div class="wico">⏰</div>
-          <div><h4>24/7 Emergency Support</h4><p>Always a call or WhatsApp away — nights, weekends and holidays included.</p></div>
-        </div>
-        <div class="wcard rv d2">
-          <div class="wico">🎓</div>
-          <div><h4>Qualified Professionals</h4><p>Certified nurses, pharmacists, and CMS & ED trained EMTs with real expertise.</p></div>
-        </div>
-        <div class="wcard rv d3">
-          <div class="wico">🏠</div>
-          <div><h4>Heal at Home</h4><p>Patients recover faster in familiar surroundings. We bring the clinic to you.</p></div>
-        </div>
-        <div class="wcard rv d4">
-          <div class="wico">🛡️</div>
-          <div><h4>Sterile & Safe Practice</h4><p>Every procedure follows strict hygiene protocols to protect your family.</p></div>
-        </div>
+        <div class="wcard rv d1"><div class="wico">⏰</div><div><h4>24/7 Emergency Support</h4><p>Always a call or WhatsApp away — nights, weekends and holidays included.</p></div></div>
+        <div class="wcard rv d2"><div class="wico">🎓</div><div><h4>Qualified Professionals</h4><p>Certified nurses, pharmacists, and CMS & ED trained EMTs with real expertise.</p></div></div>
+        <div class="wcard rv d3"><div class="wico">🏠</div><div><h4>Heal at Home</h4><p>Patients recover faster in familiar surroundings. We bring the clinic to you.</p></div></div>
+        <div class="wcard rv d4"><div class="wico">🛡️</div><div><h4>Sterile & Safe Practice</h4><p>Every procedure follows strict hygiene protocols to protect your family.</p></div></div>
       </div>
       <div class="wpanel rv d2">
         <p class="wqt">"Caring for others is not a job — it is a calling. We answer that call every single day, with compassion at the heart of everything we do."</p>
@@ -592,61 +567,31 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
 <footer>
   <div class="ftin">
     <div class="ftg">
-      <div class="ftb">
-        <h2>Florence Nightingale Nursing</h2>
-        <p>Compassionate home nursing care at your doorstep in Ghaziabad, Uttar Pradesh. Available 24/7, every day.</p>
-        <span class="ftsc">Your Health. Our Priority.</span>
-      </div>
-      <div>
-        <div class="fth">Pages</div>
-        <ul class="ftul">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="services.html">Services</a></li>
-          <li><a href="doctors.html">Our Doctors</a></li>
-          <li><a href="about.html">About Us</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="fth">Contact</div>
-        <ul class="ftul">
-          <li><a href="tel:9219509528">Dr. Satyam: 9219509528</a></li>
-          <li><a href="tel:917270945129">Subham: +91 7270945129</a></li>
-          <li><a href="https://wa.me/917270945129" target="_blank">WhatsApp: 7270945129</a></li>
-          <li><a href="contact.html">Raj Nagar Ext., Ghaziabad</a></li>
-        </ul>
-      </div>
+      <div class="ftb"><h2>Florence Nightingale Nursing</h2><p>Compassionate home nursing care at your doorstep in Ghaziabad, Uttar Pradesh. Available 24/7, every day.</p><span class="ftsc">Your Health. Our Priority.</span></div>
+      <div><div class="fth">Pages</div><ul class="ftul"><li><a href="index.html">Home</a></li><li><a href="services.html">Services</a></li><li><a href="doctors.html">Our Doctors</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div><div class="fth">Contact</div><ul class="ftul"><li><a href="tel:9219509528">Dr. Satyam: 9219509528</a></li><li><a href="tel:917270945129">Subham: +91 7270945129</a></li><li><a href="https://wa.me/917270945129" target="_blank">WhatsApp: 7270945129</a></li><li><a href="contact.html">Raj Nagar Ext., Ghaziabad</a></li></ul></div>
     </div>
-    <div class="ftbot">
-      <span>© 2025 Florence Nightingale Nursing. All rights reserved.</span>
-      <span style="font-family:'Dancing Script',cursive;font-size:18px;color:#7ee8c8">Compassion · Care · Commitment</span>
-    </div>
+    <div class="ftbot"><span>© 2025 Florence Nightingale Nursing. All rights reserved.</span><span style="font-family:'Dancing Script',cursive;font-size:18px;color:#7ee8c8">Compassion · Care · Commitment</span></div>
   </div>
 </footer>
 
 <script>
-/* Navbar scroll shadow */
-window.addEventListener('scroll', () => {
-  document.getElementById('nb').classList.toggle('sc', scrollY > 28);
-});
+/* ── 1. NAVBAR ── */
+window.addEventListener('scroll', () => document.getElementById('nb').classList.toggle('sc', scrollY > 28));
 
-/* Scroll reveal */
+/* ── 2. SCROLL REVEAL ── */
 const obs = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add('v'); obs.unobserve(e.target); }
 }), { threshold: .1 });
 document.querySelectorAll('.rv').forEach(el => obs.observe(el));
 
-/* ECG loop */
+/* ── 3. ECG LOOP ── */
 function loopECG() {
-  document.querySelectorAll('.el,.eg').forEach(el => {
-    el.style.animation = 'none';
-    void el.offsetWidth;
-    el.style.animation = '';
-  });
+  document.querySelectorAll('.el,.eg').forEach(el => { el.style.animation='none'; void el.offsetWidth; el.style.animation=''; });
 }
 setInterval(loopECG, 4300);
 
-/* Hamburger / mobile menu */
+/* ── 4. HAMBURGER ── */
 function toggleMenu() {
   const ham = document.getElementById('ham');
   const menu = document.getElementById('mob-menu');
@@ -654,17 +599,11 @@ function toggleMenu() {
   menu.classList.toggle('open', open);
   document.body.style.overflow = open ? 'hidden' : '';
 }
-
-/* Close menu when a link is clicked */
-document.querySelectorAll('.mob-menu a').forEach(a => {
-  a.addEventListener('click', () => {
-    document.getElementById('ham').classList.remove('open');
-    document.getElementById('mob-menu').classList.remove('open');
-    document.body.style.overflow = '';
-  });
-});
-
-/* Close menu on outside click */
+document.querySelectorAll('.mob-menu a').forEach(a => a.addEventListener('click', () => {
+  document.getElementById('ham').classList.remove('open');
+  document.getElementById('mob-menu').classList.remove('open');
+  document.body.style.overflow = '';
+}));
 document.addEventListener('click', e => {
   const menu = document.getElementById('mob-menu');
   const ham = document.getElementById('ham');
@@ -674,6 +613,152 @@ document.addEventListener('click', e => {
     document.body.style.overflow = '';
   }
 });
+
+/* ════════════════════════════
+   NEW ANIMATIONS
+════════════════════════════ */
+
+/* ── A. TYPEWRITER ── */
+const twFull = "Compassionate, skilled nursing brought right to your home. From IV drips to physiotherapy — we care for your loved ones with warmth and expertise.";
+const twEl = document.getElementById('typewriterText');
+let twIndex = 0;
+function typeNext() {
+  if (twIndex < twFull.length) {
+    twEl.textContent = twFull.slice(0, ++twIndex);
+    setTimeout(typeNext, twIndex < 30 ? 55 : twIndex < 80 ? 35 : 22);
+  }
+}
+// Start typewriter after 1.2s (after hero animates in)
+setTimeout(typeNext, 1200);
+
+/* ── B. WORD SWAP ── */
+const swapWords = ['Injection Care', 'Wound Dressing', 'Physiotherapy', 'Lab Tests', 'IV Drip Care', 'Nurse at Home'];
+const swapColors = ['#3a7fc1','#2a9d8f','#7b5ea7','#3a8f5e','#1f5490','#c0504a'];
+let swapIndex = 0;
+const swapEl = document.getElementById('swapVisible');
+
+function doSwap() {
+  // Slide out
+  swapEl.style.transition = 'transform .4s ease, opacity .4s ease';
+  swapEl.style.transform = 'translateY(-110%)';
+  swapEl.style.opacity = '0';
+  setTimeout(() => {
+    swapIndex = (swapIndex + 1) % swapWords.length;
+    swapEl.textContent = swapWords[swapIndex];
+    swapEl.style.color = swapColors[swapIndex];
+    swapEl.style.transition = 'none';
+    swapEl.style.transform = 'translateY(110%)';
+    swapEl.style.opacity = '0';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      swapEl.style.transition = 'transform .4s ease, opacity .4s ease';
+      swapEl.style.transform = 'translateY(0)';
+      swapEl.style.opacity = '1';
+    }));
+  }, 400);
+}
+// Init first word
+swapEl.textContent = swapWords[0];
+swapEl.style.color = swapColors[0];
+swapEl.style.fontSize = 'inherit';
+swapEl.style.fontWeight = '700';
+setInterval(doSwap, 2200);
+
+/* ── C. PARALLAX ── */
+const parallaxBg = document.getElementById('parallaxBg');
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  if (scrolled < window.innerHeight * 1.5) {
+    parallaxBg.style.transform = `translateY(${scrolled * 0.35}px)`;
+  }
+}, { passive: true });
+
+/* ── D. STETHOSCOPE DRAW (on scroll into view) ── */
+const stethPaths = ['sp1','sp2','sp3','sp4','sp5','sp6'];
+const stethCircles = ['sc1','sc2','sc3','sc4','sc5'];
+let stethDrawn = false;
+
+function drawStethoscope() {
+  if (stethDrawn) return;
+  stethDrawn = true;
+  stethPaths.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const len = el.getTotalLength ? el.getTotalLength() : 200;
+      el.style.strokeDasharray = len;
+      el.style.strokeDashoffset = len;
+      setTimeout(() => {
+        el.style.transition = `stroke-dashoffset ${0.8 + i * 0.3}s cubic-bezier(.4,0,.2,1)`;
+        el.style.strokeDashoffset = '0';
+      }, i * 180);
+    }
+  });
+  stethCircles.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      setTimeout(() => {
+        el.style.transition = 'opacity .5s ease, transform .5s cubic-bezier(.34,1.56,.64,1)';
+        el.style.opacity = '1';
+        el.style.transform = 'scale(1)';
+      }, 900 + i * 150);
+    }
+  });
+}
+
+// Init steth paths hidden
+stethPaths.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) { el.style.strokeDasharray='800'; el.style.strokeDashoffset='800'; }
+});
+stethCircles.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) { el.style.opacity='0'; el.style.transform='scale(0)'; }
+});
+
+const stethObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) { drawStethoscope(); stethObs.disconnect(); }
+}, { threshold: 0.3 });
+stethObs.observe(document.getElementById('stethSec'));
+
+
+
+/* ── F. DNA HELIX DRAW (on scroll) ── */
+let dnaDrawn = false;
+function animateDNA() {
+  if (dnaDrawn) return;
+  dnaDrawn = true;
+  ['dnaLeft','dnaRight'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const len = el.getTotalLength ? el.getTotalLength() : 600;
+      el.style.strokeDasharray = len;
+      el.style.strokeDashoffset = len;
+      el.style.transition = `stroke-dashoffset ${2.2}s cubic-bezier(.4,0,.2,1) ${i * 0.2}s`;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.style.strokeDashoffset = '0';
+      }));
+    }
+  });
+  document.querySelectorAll('.dna-rung').forEach((el, i) => {
+    el.style.strokeDasharray = '200';
+    el.style.strokeDashoffset = '200';
+    el.style.transition = `stroke-dashoffset .5s ease ${0.3 + i * 0.09}s`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.strokeDashoffset = '0';
+    }));
+  });
+}
+
+['dnaLeft','dnaRight'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) { const len = el.getTotalLength ? el.getTotalLength() : 600; el.style.strokeDasharray = len; el.style.strokeDashoffset = len; }
+});
+document.querySelectorAll('.dna-rung').forEach(el => { el.style.strokeDasharray='200'; el.style.strokeDashoffset='200'; });
+
+const dnaObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) { animateDNA(); dnaObs.disconnect(); }
+}, { threshold: 0.2 });
+dnaObs.observe(document.getElementById('dnaSec'));
+
 </script>
 </body>
 </html>
