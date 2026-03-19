@@ -35,7 +35,6 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--tb);overflow
 @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
 @keyframes drawStroke{from{stroke-dashoffset:800}to{stroke-dashoffset:0}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes slideCard{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
 @keyframes statGlow{0%,100%{opacity:.18}50%{opacity:.32}}
 .rv{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
 .rv.v{opacity:1;transform:translateY(0)}
@@ -613,7 +612,7 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
         <span class="rev-avg-num" id="idx-avg">—</span>
         <div>
           <div class="rev-avg-star" id="idx-stars">★★★★★</div>
-          <div class="rev-avg-lbl" id="idx-total">0 reviews</div>
+          <div class="rev-avg-lbl" id="idx-total">Loading…</div>
         </div>
       </div>
       <div class="rev-divider"></div>
@@ -706,202 +705,457 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
   </div>
 </footer>
 
-<!-- FIREBASE -->
+<!-- ===================== FIREBASE + REVIEWS SCRIPT ===================== -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
-import { getDatabase, ref, push, onValue, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js';
+import { getDatabase, ref, push, onValue } from 'https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js';
 
 const FC = {
-  apiKey:"AIzaSyDg6JM-AuzcxktlV8JjbXBy2Qly53JNues",
-  authDomain:"florenceclinic-92811.firebaseapp.com",
-  databaseURL:"https://florenceclinic-92811-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:"florenceclinic-92811",
-  storageBucket:"florenceclinic-92811.firebasestorage.app",
-  messagingSenderId:"134381522604",
-  appId:"1:134381522604:web:7822d41a7c9ab97eded909"
+  apiKey: "AIzaSyDg6JM-AuzcxktlV8JjbXBy2Qly53JNues",
+  authDomain: "florenceclinic-92811.firebaseapp.com",
+  databaseURL: "https://florenceclinic-92811-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "florenceclinic-92811",
+  storageBucket: "florenceclinic-92811.firebasestorage.app",
+  messagingSenderId: "134381522604",
+  appId: "1:134381522604:web:7822d41a7c9ab97eded909"
 };
 
-let allRevs=[], mfStar=0, fbRef=null;
+/* ---- Init ---- */
+const app = initializeApp(FC);
+const db  = getDatabase(app);
+const fbRef = ref(db, 'fn_reviews');
 
-function initials(n){return n.trim().split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';}
-function timeAgo(ts){
-  if(!ts) return 'just now';
-  const s=Math.floor((Date.now()-ts)/1000);
-  if(s<60) return 'just now';
-  if(s<3600) return Math.floor(s/60)+'m ago';
-  if(s<86400) return Math.floor(s/3600)+'h ago';
-  if(s<604800) return Math.floor(s/86400)+'d ago';
-  return new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
-}
-function starStr(n){return '★'.repeat(n)+'☆'.repeat(5-n);}
+/* ---- State ---- */
+let allRevs  = [];
+let mfStar   = 0;
+let curSlide = 0;
 
-function updateIdxStats(){
-  const t=allRevs.length;
-  const el=(id)=>document.getElementById(id);
-  if(!t){el('idx-avg').textContent='—';el('idx-total').textContent='No reviews yet';return;}
-  const avg=allRevs.reduce((a,r)=>a+r.rating,0)/t;
-  el('idx-avg').textContent=avg.toFixed(1);
-  el('idx-total').textContent=t+' review'+(t!==1?'s':'');
-  el('idx-five').textContent=allRevs.filter(r=>r.rating===5).length;
-  el('idx-rec').textContent=Math.round(allRevs.filter(r=>r.rating>=4).length/t*100)+'%';
+/* ---- Helpers ---- */
+function initials(n) {
+  return n.trim().split(' ').map(w => w[0] || '').join('').toUpperCase().slice(0, 2) || '?';
 }
 
-let curSlide=0;
+function timeAgo(ts) {
+  if (!ts) return 'just now';
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60)     return 'just now';
+  if (s < 3600)   return Math.floor(s / 60) + 'm ago';
+  if (s < 86400)  return Math.floor(s / 3600) + 'h ago';
+  if (s < 604800) return Math.floor(s / 86400) + 'd ago';
+  return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
 
-function getVisible(){return window.innerWidth<=700?1:3;}
+function starStr(n) {
+  return '★'.repeat(n) + '☆'.repeat(5 - n);
+}
 
-function buildCarousel(){
-  const list=[...allRevs].sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,12);
-  if(!list.length) return;
-  const VISIBLE=getVisible();
-  const track=document.getElementById('carouselTrack');
-  const dots=document.getElementById('carouselDots');
-  const pages=Math.ceil(list.length/VISIBLE);
-  const outer=document.getElementById('carouselOuter');
-  const cardW=(outer.offsetWidth-(VISIBLE-1)*20)/VISIBLE;
-  track.innerHTML=list.map(r=>`
+function getVisible() {
+  return window.innerWidth <= 700 ? 1 : 3;
+}
+
+/* ---- Stats panel ---- */
+function updateIdxStats() {
+  const t = allRevs.length;
+  const el = id => document.getElementById(id);
+  if (!t) {
+    el('idx-avg').textContent   = '—';
+    el('idx-total').textContent = 'No reviews yet';
+    el('idx-five').textContent  = '—';
+    el('idx-rec').textContent   = '—';
+    return;
+  }
+  const avg = allRevs.reduce((a, r) => a + r.rating, 0) / t;
+  el('idx-avg').textContent   = avg.toFixed(1);
+  el('idx-total').textContent = t + ' review' + (t !== 1 ? 's' : '');
+  el('idx-five').textContent  = allRevs.filter(r => r.rating === 5).length;
+  el('idx-rec').textContent   = Math.round(allRevs.filter(r => r.rating >= 4).length / t * 100) + '%';
+}
+
+/* ---- Carousel ---- */
+function buildCarousel() {
+  const list  = allRevs.slice(0, 12);
+  const track = document.getElementById('carouselTrack');
+  const dots  = document.getElementById('carouselDots');
+  const outer = document.getElementById('carouselOuter');
+  if (!track || !outer) return;
+
+  if (!list.length) {
+    track.innerHTML = '<div class="c-card" style="width:100%;text-align:center;padding:40px;color:var(--ts)">No reviews yet. Be the first!</div>';
+    dots.innerHTML  = '';
+    return;
+  }
+
+  const VISIBLE = getVisible();
+  const gap     = 20;
+  const cardW   = Math.floor((outer.offsetWidth - (VISIBLE - 1) * gap) / VISIBLE);
+  const pages   = Math.ceil(list.length / VISIBLE);
+
+  track.innerHTML = list.map(r => `
     <div class="c-card" style="width:${cardW}px;min-width:${cardW}px">
       <div class="c-card-top">
         <div class="c-av">${initials(r.name)}</div>
         <div style="flex:1;min-width:0">
           <div class="c-name">${r.name}</div>
-          <div class="c-meta"><span class="c-svc">${r.service}</span><span>· ${timeAgo(r.ts)}</span></div>
+          <div class="c-meta">
+            <span class="c-svc">${r.service}</span>
+            <span>· ${timeAgo(r.ts)}</span>
+          </div>
         </div>
         <div class="c-stars" title="${r.rating}/5">${starStr(r.rating)}</div>
       </div>
       <div class="c-text">${r.text}</div>
     </div>
   `).join('');
-  dots.innerHTML=Array.from({length:pages},(_,i)=>`<button class="c-dot${i===0?' on':''}" onclick="goSlide(${i})" aria-label="Slide ${i+1}"></button>`).join('');
-  curSlide=0; applySlide();
+
+  dots.innerHTML = Array.from({ length: pages }, (_, i) =>
+    `<button class="c-dot${i === 0 ? ' on' : ''}" onclick="goSlide(${i})" aria-label="Slide ${i + 1}"></button>`
+  ).join('');
+
+  curSlide = 0;
+  applySlide();
 }
 
-function applySlide(){
-  const list=[...allRevs].sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,12);
-  const VISIBLE=getVisible();
-  const pages=Math.ceil(list.length/VISIBLE);
-  const outer=document.getElementById('carouselOuter');
-  const track=document.getElementById('carouselTrack');
-  if(!outer||!track) return;
-  const cardW=(outer.offsetWidth-(VISIBLE-1)*20)/VISIBLE;
-  track.style.transform=`translateX(-${curSlide*VISIBLE*(cardW+20)}px)`;
-  document.querySelectorAll('.c-dot').forEach((d,i)=>d.classList.toggle('on',i===curSlide));
-  const prev=document.getElementById('c-prev'),next=document.getElementById('c-next');
-  if(prev) prev.disabled=curSlide===0;
-  if(next) next.disabled=curSlide>=pages-1;
+function applySlide() {
+  const list  = allRevs.slice(0, 12);
+  const outer = document.getElementById('carouselOuter');
+  const track = document.getElementById('carouselTrack');
+  if (!outer || !track || !list.length) return;
+
+  const VISIBLE = getVisible();
+  const gap     = 20;
+  const cardW   = Math.floor((outer.offsetWidth - (VISIBLE - 1) * gap) / VISIBLE);
+  const pages   = Math.ceil(list.length / VISIBLE);
+
+  track.style.transform = `translateX(-${curSlide * VISIBLE * (cardW + gap)}px)`;
+
+  document.querySelectorAll('.c-dot').forEach((d, i) => d.classList.toggle('on', i === curSlide));
+
+  const prev = document.getElementById('c-prev');
+  const next = document.getElementById('c-next');
+  if (prev) prev.disabled = curSlide === 0;
+  if (next) next.disabled = curSlide >= pages - 1;
 }
 
-window.carouselPrev=()=>{if(curSlide>0){curSlide--;applySlide();}};
-window.carouselNext=()=>{
-  const list=[...allRevs].slice(0,12);
-  const VISIBLE=getVisible();
-  if(curSlide<Math.ceil(list.length/VISIBLE)-1){curSlide++;applySlide();}
+/* ---- Expose carousel controls to global scope ---- */
+window.carouselPrev = () => { if (curSlide > 0) { curSlide--; applySlide(); } };
+window.carouselNext = () => {
+  const pages = Math.ceil(allRevs.slice(0, 12).length / getVisible());
+  if (curSlide < pages - 1) { curSlide++; applySlide(); }
 };
-window.goSlide=(i)=>{curSlide=i;applySlide();};
+window.goSlide = i => { curSlide = i; applySlide(); };
 
-window.setMfStar=function(n){
-  mfStar=n;
-  document.querySelectorAll('.mf-star').forEach((s,i)=>{s.classList.toggle('lit',i<n);s.style.transform=i<n?'scale(1.1)':'scale(1)';});
-};
-
-window.submitMiniReview=async function(){
-  const name=document.getElementById('mf-name').value.trim();
-  const svc=document.getElementById('mf-svc').value;
-  const txt=document.getElementById('mf-txt').value.trim();
-  const msg=document.getElementById('mf-msg');
-  const btn=document.getElementById('mf-btn');
-  msg.className='mf-msg er';
-  if(!name){msg.textContent='Please enter your name.';return;}
-  if(!svc){msg.textContent='Please select a service.';return;}
-  if(!mfStar){msg.textContent='Please choose a star rating.';return;}
-  if(txt.length<15){msg.textContent='Please write at least 15 characters.';return;}
-  btn.disabled=true;btn.textContent='Posting…';
-  const entry={name,service:svc,rating:mfStar,text:txt,ts:Date.now()};
-  try{
-    if(fbRef){await push(fbRef,{...entry,ts:serverTimestamp()});}
-    else{allRevs.unshift({id:'l'+Date.now(),...entry});buildCarousel();updateIdxStats();}
-    document.getElementById('mf-name').value='';
-    document.getElementById('mf-svc').value='';
-    document.getElementById('mf-txt').value='';
-    window.setMfStar(0);mfStar=0;
-    msg.className='mf-msg ok';
-    msg.textContent='🎉 Thank you! Your review is now live.';
-    setTimeout(()=>msg.textContent='',6000);
-  }catch(e){msg.className='mf-msg er';msg.textContent='Could not post. Please check your connection.';}
-  btn.disabled=false;
-  btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/></svg> Submit Review';
+/* ---- Star rating ---- */
+window.setMfStar = function(n) {
+  mfStar = n;
+  document.querySelectorAll('.mf-star').forEach((s, i) => {
+    s.classList.toggle('lit', i < n);
+    s.style.transform = i < n ? 'scale(1.1)' : 'scale(1)';
+  });
 };
 
-function loadFallback(){
-  allRevs=[
-    {id:'s1',name:'Priya Sharma',service:'IV Drip at Home',rating:5,text:'The nurse arrived on time and was extremely professional. My mother recovered quickly thanks to the attentive care. Highly recommended!',ts:Date.now()-18e6},
-    {id:'s2',name:'Rakesh Gupta',service:'Wound Dressing',rating:5,text:'Excellent wound care at home. Dr. Satyam guided the team very well. Hygienic and completely painless.',ts:Date.now()-43e6},
-    {id:'s3',name:'Sunita Verma',service:'Physiotherapy',rating:4,text:'Very convenient physio sessions after knee surgery. The therapist was patient and knowledgeable.',ts:Date.now()-86e6},
-    {id:'s4',name:'Amit Srivastava',service:'Pathology Lab Tests',rating:5,text:'Blood sample collected at home. Results came quickly. Fantastic service!',ts:Date.now()-172e6},
-    {id:'s5',name:'Kavita Singh',service:'Injection at Home',rating:5,text:'Very professional and punctual. The injection was given painlessly. Will definitely call again.',ts:Date.now()-259e6},
-    {id:'s6',name:'Mohan Sharma',service:'Enema Care',rating:4,text:'Handled with great care, hygiene and respect for the patient. Excellent professionalism throughout.',ts:Date.now()-345e6},
+/* ---- Submit review ---- */
+window.submitMiniReview = async function() {
+  const name = document.getElementById('mf-name').value.trim();
+  const svc  = document.getElementById('mf-svc').value;
+  const txt  = document.getElementById('mf-txt').value.trim();
+  const msg  = document.getElementById('mf-msg');
+  const btn  = document.getElementById('mf-btn');
+
+  msg.className = 'mf-msg er';
+  if (!name)        { msg.textContent = 'Please enter your name.';           return; }
+  if (!svc)         { msg.textContent = 'Please select a service.';          return; }
+  if (!mfStar)      { msg.textContent = 'Please choose a star rating.';      return; }
+  if (txt.length < 15) { msg.textContent = 'Please write at least 15 characters.'; return; }
+
+  btn.disabled    = true;
+  btn.textContent = 'Posting…';
+
+  try {
+    await push(fbRef, {
+      name,
+      service: svc,
+      rating:  mfStar,
+      text:    txt,
+      ts:      Date.now()   // numeric timestamp — safe for sorting
+    });
+
+    /* Clear form */
+    document.getElementById('mf-name').value = '';
+    document.getElementById('mf-svc').value  = '';
+    document.getElementById('mf-txt').value  = '';
+    window.setMfStar(0);
+    mfStar = 0;
+
+    msg.className   = 'mf-msg ok';
+    msg.textContent = '🎉 Thank you! Your review is now live.';
+    setTimeout(() => (msg.textContent = ''), 6000);
+  } catch (e) {
+    msg.className   = 'mf-msg er';
+    msg.textContent = 'Could not post. Please check your connection.';
+  }
+
+  btn.disabled  = false;
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/></svg> Submit Review';
+};
+
+/* ---- Fallback data ---- */
+function loadFallback() {
+  allRevs = [
+    { id:'s1', name:'Priya Sharma',     service:'IV Drip at Home',    rating:5, text:'The nurse arrived on time and was extremely professional. My mother recovered quickly thanks to the attentive care. Highly recommended!', ts: Date.now()-18e6 },
+    { id:'s2', name:'Rakesh Gupta',     service:'Wound Dressing',     rating:5, text:'Excellent wound care at home. Dr. Satyam guided the team very well. Hygienic and completely painless.',                                  ts: Date.now()-43e6 },
+    { id:'s3', name:'Sunita Verma',     service:'Physiotherapy',      rating:4, text:'Very convenient physio sessions after knee surgery. The therapist was patient and knowledgeable.',                                        ts: Date.now()-86e6 },
+    { id:'s4', name:'Amit Srivastava',  service:'Pathology Lab Tests',rating:5, text:'Blood sample collected at home. Results came quickly. Fantastic service!',                                                               ts: Date.now()-172e6 },
+    { id:'s5', name:'Kavita Singh',     service:'Injection at Home',  rating:5, text:'Very professional and punctual. The injection was given painlessly. Will definitely call again.',                                        ts: Date.now()-259e6 },
+    { id:'s6', name:'Mohan Sharma',     service:'Enema Care',         rating:4, text:'Handled with great care, hygiene and respect for the patient. Excellent professionalism throughout.',                                   ts: Date.now()-345e6 },
   ];
-  buildCarousel();updateIdxStats();
+  buildCarousel();
+  updateIdxStats();
 }
 
-try{
-  const app=initializeApp(FC);
-  const db=getDatabase(app);
-  fbRef=ref(db,'fn_reviews');
-  onValue(fbRef,snap=>{
-    allRevs=[];
-    if(snap.exists()) snap.forEach(c=>allRevs.push({id:c.key,...c.val()}));
-    allRevs.reverse();
-    buildCarousel();updateIdxStats();
-  },err=>{console.error('Firebase read error:',err);loadFallback();});
-}catch(e){console.error('Firebase init error:',e);loadFallback();}
+/* ---- Firebase listener ---- */
+try {
+  onValue(fbRef, snap => {
+    allRevs = [];
+    if (snap.exists()) {
+      snap.forEach(c => {
+        const val = c.val();
+        allRevs.push({
+          id:      c.key,
+          name:    val.name    || 'Anonymous',
+          service: val.service || 'Service',
+          rating:  Number(val.rating) || 0,
+          text:    val.text    || '',
+          ts:      typeof val.ts === 'number' ? val.ts : Date.now()
+        });
+      });
+    }
+    /* Newest first */
+    allRevs.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    buildCarousel();
+    updateIdxStats();
+  }, err => {
+    console.error('Firebase read error:', err);
+    loadFallback();
+  });
+} catch (e) {
+  console.error('Firebase init error:', e);
+  loadFallback();
+}
 
-// window.addEventListener('resize',()=>{buildCarousel();});
-window.addEventListener('resize',()=>{buildCarousel();});
-window.addEventListener('load',()=>{setTimeout(()=>{buildCarousel();},500);});
+/* ---- Rebuild carousel on resize (debounced) ---- */
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(buildCarousel, 220);
+});
 </script>
 
+<!-- ===================== UI / ANIMATION SCRIPTS ===================== -->
 <script>
-window.addEventListener('scroll',()=>document.getElementById('nb').classList.toggle('sc',scrollY>28));
-const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target);}}),{threshold:.1});
-document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
-function loopECG(){document.querySelectorAll('.el,.eg').forEach(el=>{el.style.animation='none';void el.offsetWidth;el.style.animation='';})}
-setInterval(loopECG,4300);
-function toggleMenu(){const ham=document.getElementById('ham'),menu=document.getElementById('mob-menu'),open=ham.classList.toggle('open');menu.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
-document.querySelectorAll('.mob-menu a').forEach(a=>a.addEventListener('click',()=>{document.getElementById('ham').classList.remove('open');document.getElementById('mob-menu').classList.remove('open');document.body.style.overflow='';}));
-document.addEventListener('click',e=>{const menu=document.getElementById('mob-menu'),ham=document.getElementById('ham');if(menu.classList.contains('open')&&!menu.contains(e.target)&&!ham.contains(e.target)){ham.classList.remove('open');menu.classList.remove('open');document.body.style.overflow='';}});
-const twFull="Compassionate, skilled nursing brought right to your home. From IV drips to physiotherapy — we care for your loved ones with warmth and expertise.";
-const twEl=document.getElementById('typewriterText');
-let twIndex=0;
-function typeNext(){if(twIndex<twFull.length){twEl.textContent=twFull.slice(0,++twIndex);setTimeout(typeNext,twIndex<30?55:twIndex<80?35:22);}}
-setTimeout(typeNext,1200);
-const swapWords=['Injection Care','Wound Dressing','Physiotherapy','Lab Tests','IV Drip Care','Nurse at Home'];
-const swapColors=['#3a7fc1','#2a9d8f','#7b5ea7','#3a8f5e','#1f5490','#c0504a'];
-let swapIndex=0;
-const swapEl=document.getElementById('swapVisible');
-function doSwap(){swapEl.style.transition='transform .4s ease,opacity .4s ease';swapEl.style.transform='translateY(-110%)';swapEl.style.opacity='0';setTimeout(()=>{swapIndex=(swapIndex+1)%swapWords.length;swapEl.textContent=swapWords[swapIndex];swapEl.style.color=swapColors[swapIndex];swapEl.style.transition='none';swapEl.style.transform='translateY(110%)';swapEl.style.opacity='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{swapEl.style.transition='transform .4s ease,opacity .4s ease';swapEl.style.transform='translateY(0)';swapEl.style.opacity='1';}));},400);}
-swapEl.textContent=swapWords[0];swapEl.style.color=swapColors[0];swapEl.style.fontWeight='700';
-setInterval(doSwap,2200);
-const parallaxBg=document.getElementById('parallaxBg');
-window.addEventListener('scroll',()=>{const s=window.scrollY;if(s<window.innerHeight*1.5)parallaxBg.style.transform=`translateY(${s*.35}px)`;},{passive:true});
-function countUp(el,target,duration){if(!el)return;const start=performance.now();function tick(now){const p=Math.min((now-start)/duration,1);const ease=1-Math.pow(1-p,3);el.textContent=Math.floor(ease*target);if(p<1)requestAnimationFrame(tick);else el.textContent=target;}requestAnimationFrame(tick);}
-let statsAnimated=false;
-const statsObs=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!statsAnimated){statsAnimated=true;countUp(document.getElementById('stat-families'),2000,2200);countUp(document.getElementById('stat-services'),12,1400);countUp(document.getElementById('stat-friendly'),100,1800);setTimeout(()=>{document.querySelectorAll('.stat-bar-fill').forEach(b=>b.classList.add('go'));},200);statsObs.disconnect();}},{threshold:.35});
-const stripEl=document.getElementById('statsStrip');
-if(stripEl)statsObs.observe(stripEl);
-const stethPaths=['sp1','sp2','sp3','sp4','sp5','sp6'];
-const stethCircles=['sc1','sc2','sc3','sc4','sc5'];
-let stethDrawn=false;
-function drawStethoscope(){if(stethDrawn)return;stethDrawn=true;stethPaths.forEach((id,i)=>{const el=document.getElementById(id);if(el){const len=el.getTotalLength?el.getTotalLength():200;el.style.strokeDasharray=len;el.style.strokeDashoffset=len;setTimeout(()=>{el.style.transition=`stroke-dashoffset ${.8+i*.3}s cubic-bezier(.4,0,.2,1)`;el.style.strokeDashoffset='0';},i*180);}});stethCircles.forEach((id,i)=>{const el=document.getElementById(id);if(el){setTimeout(()=>{el.style.transition='opacity .5s ease,transform .5s cubic-bezier(.34,1.56,.64,1)';el.style.opacity='1';el.style.transform='scale(1)';},900+i*150);}});}
-stethPaths.forEach(id=>{const el=document.getElementById(id);if(el){el.style.strokeDasharray='800';el.style.strokeDashoffset='800';}});
-stethCircles.forEach(id=>{const el=document.getElementById(id);if(el){el.style.opacity='0';el.style.transform='scale(0)';}});
-const stethObs=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){drawStethoscope();stethObs.disconnect();}},{threshold:.3});
+/* Navbar shadow on scroll */
+window.addEventListener('scroll', () => {
+  document.getElementById('nb').classList.toggle('sc', scrollY > 28);
+}, { passive: true });
+
+/* Intersection observer for .rv elements */
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('v'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+/* ECG loop */
+function loopECG() {
+  document.querySelectorAll('.el, .eg').forEach(el => {
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = '';
+  });
+}
+setInterval(loopECG, 4300);
+
+/* Mobile menu */
+function toggleMenu() {
+  const ham  = document.getElementById('ham');
+  const menu = document.getElementById('mob-menu');
+  const open = ham.classList.toggle('open');
+  menu.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+document.querySelectorAll('.mob-menu a').forEach(a => a.addEventListener('click', () => {
+  document.getElementById('ham').classList.remove('open');
+  document.getElementById('mob-menu').classList.remove('open');
+  document.body.style.overflow = '';
+}));
+document.addEventListener('click', e => {
+  const menu = document.getElementById('mob-menu');
+  const ham  = document.getElementById('ham');
+  if (menu.classList.contains('open') && !menu.contains(e.target) && !ham.contains(e.target)) {
+    ham.classList.remove('open');
+    menu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+
+/* Typewriter */
+const twFull = "Compassionate, skilled nursing brought right to your home. From IV drips to physiotherapy — we care for your loved ones with warmth and expertise.";
+const twEl   = document.getElementById('typewriterText');
+let twIndex  = 0;
+function typeNext() {
+  if (twIndex < twFull.length) {
+    twEl.textContent = twFull.slice(0, ++twIndex);
+    setTimeout(typeNext, twIndex < 30 ? 55 : twIndex < 80 ? 35 : 22);
+  }
+}
+setTimeout(typeNext, 1200);
+
+/* Word swap */
+const swapWords  = ['Injection Care','Wound Dressing','Physiotherapy','Lab Tests','IV Drip Care','Nurse at Home'];
+const swapColors = ['#3a7fc1','#2a9d8f','#7b5ea7','#3a8f5e','#1f5490','#c0504a'];
+let swapIndex    = 0;
+const swapEl     = document.getElementById('swapVisible');
+function doSwap() {
+  swapEl.style.transition = 'transform .4s ease, opacity .4s ease';
+  swapEl.style.transform  = 'translateY(-110%)';
+  swapEl.style.opacity    = '0';
+  setTimeout(() => {
+    swapIndex = (swapIndex + 1) % swapWords.length;
+    swapEl.textContent    = swapWords[swapIndex];
+    swapEl.style.color    = swapColors[swapIndex];
+    swapEl.style.transition = 'none';
+    swapEl.style.transform  = 'translateY(110%)';
+    swapEl.style.opacity    = '0';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      swapEl.style.transition = 'transform .4s ease, opacity .4s ease';
+      swapEl.style.transform  = 'translateY(0)';
+      swapEl.style.opacity    = '1';
+    }));
+  }, 400);
+}
+swapEl.textContent  = swapWords[0];
+swapEl.style.color  = swapColors[0];
+swapEl.style.fontWeight = '700';
+setInterval(doSwap, 2200);
+
+/* Parallax */
+const parallaxBg = document.getElementById('parallaxBg');
+window.addEventListener('scroll', () => {
+  const s = window.scrollY;
+  if (s < window.innerHeight * 1.5) parallaxBg.style.transform = `translateY(${s * 0.35}px)`;
+}, { passive: true });
+
+/* Stats counter */
+function countUp(el, target, duration) {
+  if (!el) return;
+  const start = performance.now();
+  function tick(now) {
+    const p    = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(ease * target);
+    if (p < 1) requestAnimationFrame(tick);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(tick);
+}
+let statsAnimated = false;
+const statsObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting && !statsAnimated) {
+    statsAnimated = true;
+    countUp(document.getElementById('stat-families'), 2000, 2200);
+    countUp(document.getElementById('stat-services'),   12, 1400);
+    countUp(document.getElementById('stat-friendly'),  100, 1800);
+    setTimeout(() => {
+      document.querySelectorAll('.stat-bar-fill').forEach(b => b.classList.add('go'));
+    }, 200);
+    statsObs.disconnect();
+  }
+}, { threshold: 0.35 });
+const stripEl = document.getElementById('statsStrip');
+if (stripEl) statsObs.observe(stripEl);
+
+/* Stethoscope animation */
+const stethPaths   = ['sp1','sp2','sp3','sp4','sp5','sp6'];
+const stethCircles = ['sc1','sc2','sc3','sc4','sc5'];
+let stethDrawn = false;
+
+/* Init hidden state */
+stethPaths.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) { el.style.strokeDasharray = '800'; el.style.strokeDashoffset = '800'; }
+});
+stethCircles.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) { el.style.opacity = '0'; el.style.transform = 'scale(0)'; }
+});
+
+function drawStethoscope() {
+  if (stethDrawn) return;
+  stethDrawn = true;
+  stethPaths.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const len = el.getTotalLength ? el.getTotalLength() : 200;
+      el.style.strokeDasharray  = len;
+      el.style.strokeDashoffset = len;
+      setTimeout(() => {
+        el.style.transition       = `stroke-dashoffset ${0.8 + i * 0.3}s cubic-bezier(.4,0,.2,1)`;
+        el.style.strokeDashoffset = '0';
+      }, i * 180);
+    }
+  });
+  stethCircles.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      setTimeout(() => {
+        el.style.transition = 'opacity .5s ease, transform .5s cubic-bezier(.34,1.56,.64,1)';
+        el.style.opacity    = '1';
+        el.style.transform  = 'scale(1)';
+      }, 900 + i * 150);
+    }
+  });
+}
+const stethObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) { drawStethoscope(); stethObs.disconnect(); }
+}, { threshold: 0.3 });
 stethObs.observe(document.getElementById('stethSec'));
-let dnaDrawn=false;
-function animateDNA(){if(dnaDrawn)return;dnaDrawn=true;['dnaLeft','dnaRight'].forEach((id,i)=>{const el=document.getElementById(id);if(el){const len=el.getTotalLength?el.getTotalLength():600;el.style.strokeDasharray=len;el.style.strokeDashoffset=len;el.style.transition=`stroke-dashoffset 2.2s cubic-bezier(.4,0,.2,1) ${i*.2}s`;requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.strokeDashoffset='0';}));}});document.querySelectorAll('.dna-rung').forEach((el,i)=>{el.style.strokeDasharray='200';el.style.strokeDashoffset='200';el.style.transition=`stroke-dashoffset .5s ease ${.3+i*.09}s`;requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.strokeDashoffset='0';}));});}
-['dnaLeft','dnaRight'].forEach(id=>{const el=document.getElementById(id);if(el){const len=el.getTotalLength?el.getTotalLength():600;el.style.strokeDasharray=len;el.style.strokeDashoffset=len;}});
-document.querySelectorAll('.dna-rung').forEach(el=>{el.style.strokeDasharray='200';el.style.strokeDashoffset='200';});
-const dnaObs=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){animateDNA();dnaObs.disconnect();}},{threshold:.2});
+
+/* DNA animation */
+let dnaDrawn = false;
+['dnaLeft','dnaRight'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    const len = el.getTotalLength ? el.getTotalLength() : 600;
+    el.style.strokeDasharray  = len;
+    el.style.strokeDashoffset = len;
+  }
+});
+document.querySelectorAll('.dna-rung').forEach(el => {
+  el.style.strokeDasharray  = '200';
+  el.style.strokeDashoffset = '200';
+});
+
+function animateDNA() {
+  if (dnaDrawn) return;
+  dnaDrawn = true;
+  ['dnaLeft','dnaRight'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const len = el.getTotalLength ? el.getTotalLength() : 600;
+      el.style.strokeDasharray  = len;
+      el.style.strokeDashoffset = len;
+      el.style.transition = `stroke-dashoffset 2.2s cubic-bezier(.4,0,.2,1) ${i * 0.2}s`;
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.style.strokeDashoffset = '0'; }));
+    }
+  });
+  document.querySelectorAll('.dna-rung').forEach((el, i) => {
+    el.style.strokeDasharray  = '200';
+    el.style.strokeDashoffset = '200';
+    el.style.transition = `stroke-dashoffset .5s ease ${0.3 + i * 0.09}s`;
+    requestAnimationFrame(() => requestAnimationFrame(() => { el.style.strokeDashoffset = '0'; }));
+  });
+}
+const dnaObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) { animateDNA(); dnaObs.disconnect(); }
+}, { threshold: 0.2 });
 dnaObs.observe(document.getElementById('dnaSec'));
 </script>
 </body>
