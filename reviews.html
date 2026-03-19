@@ -27,7 +27,6 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--tb);overflow
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes slideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes starPop{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
-@keyframes confetti{0%{opacity:1;transform:translateY(0) rotate(0deg)}100%{opacity:0;transform:translateY(-80px) rotate(360deg)}}
 .rv{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
 .rv.v{opacity:1;transform:translateY(0)}
 .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
@@ -324,9 +323,10 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
   <div class="ftbot"><span>© 2025 Florence Nightingale Nursing. All rights reserved.</span><span style="font-family:'Dancing Script',cursive;font-size:18px;color:#7ee8c8">Compassion · Care · Commitment</span></div>
 </div></footer>
 
+<!-- ===================== FIREBASE + REVIEWS SCRIPT ===================== -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
-import { getDatabase, ref, push, onValue, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js';
+import { getDatabase, ref, push, onValue } from 'https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDg6JM-AuzcxktlV8JjbXBy2Qly53JNues",
@@ -335,174 +335,262 @@ const firebaseConfig = {
   projectId: "florenceclinic-92811",
   storageBucket: "florenceclinic-92811.firebasestorage.app",
   messagingSenderId: "134381522604",
-  appId: "1:134381522604:web:7822d41a7c9ab97eded909",
-  measurementId: "G-CXXWM2J6NT"
+  appId: "1:134381522604:web:7822d41a7c9ab97eded909"
 };
 
-let revRef, pgStar_v=0, allRevs=[], showCount=8;
+/* ---- State ---- */
+let revRef;
+let pgStar_v = 0;
+let allRevs  = [];
+let showCount = 20;   // ✅ FIX 3: show 20 reviews by default
 
-try {
-  const app=initializeApp(firebaseConfig);
-  const db=getDatabase(app);
-  revRef=ref(db,'fn_reviews');
+/* ---- Helpers ---- */
+function getInitials(n) {
+  return n.trim().split(' ').map(w => w[0] || '').join('').toUpperCase().slice(0, 2) || '?';
+}
 
-  document.getElementById('pg-fb-badge').className='fb-badge live';
-  document.getElementById('pg-fb-badge').innerHTML='<span class="fb-bdot"></span> Firebase Live · florenceclinic-92811';
+function timeAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60)     return 'just now';
+  if (s < 3600)   return Math.floor(s / 60) + 'm ago';
+  if (s < 86400)  return Math.floor(s / 3600) + 'h ago';
+  if (s < 604800) return Math.floor(s / 86400) + 'd ago';
+  return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
-  onValue(revRef, snap => {
-    allRevs=[];
-    if(snap.exists()) snap.forEach(c=>allRevs.push({id:c.key,...c.val()}));
-    allRevs.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    pgRender(); updateStats(); updateBars();
-  });
-} catch(e){ loadFallback(); }
+function starStr(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); }
 
-function loadFallback(){
-  document.getElementById('pg-fb-badge').className='fb-badge offline';
-  document.getElementById('pg-fb-badge').innerHTML='<span class="fb-bdot"></span> Enable Realtime Database in Firebase console';
-  allRevs=[
-    {id:'f1',name:'Priya Sharma',service:'IV Drip at Home',rating:5,text:'The nurse arrived on time and was extremely professional. My mother recovered quickly thanks to the attentive care. Highly recommended to everyone!',ts:Date.now()-18000000},
-    {id:'f2',name:'Rakesh Gupta',service:'Wound Dressing',rating:5,text:'Excellent wound care at home. Dr. Satyam guided the team very well. The dressing was done hygienically and completely painlessly.',ts:Date.now()-43200000},
-    {id:'f3',name:'Sunita Verma',service:'Physiotherapy',rating:4,text:'Very convenient physio sessions after my knee surgery. The therapist was patient, knowledgeable and always on time.',ts:Date.now()-86400000},
-    {id:'f4',name:'Amit Srivastava',service:'Pathology Lab Tests',rating:5,text:'Wonderful service — sample collection done at home. Results came quickly. No need to go to the lab at all!',ts:Date.now()-172800000},
-    {id:'f5',name:'Meena Agarwal',service:'Injection at Home',rating:5,text:'Very professional and gentle. The nurse explained everything before the injection. My elderly father felt very comfortable.',ts:Date.now()-259200000},
-    {id:'f6',name:'Vijay Kumar',service:'Medical Equipment',rating:4,text:'They delivered and set up the oxygen concentrator quickly. The team was responsive and helpful throughout.',ts:Date.now()-345600000},
+function avColor(i) {
+  const c = [
+    'linear-gradient(145deg,#3a7fc1,#1f5490)',
+    'linear-gradient(145deg,#2a9d8f,#1a7a6e)',
+    'linear-gradient(145deg,#7b5ea7,#5e3d8a)',
+    'linear-gradient(145deg,#c0504a,#8b2e2a)',
+    'linear-gradient(145deg,#d4a017,#a07010)',
+    'linear-gradient(145deg,#2d8a5e,#1a5e3e)'
   ];
-  pgRender(); updateStats(); updateBars();
+  return c[i % c.length];
 }
 
-function getInitials(n){return n.trim().split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';}
-function timeAgo(ts){
-  const s=Math.floor((Date.now()-ts)/1000);
-  if(s<60) return 'just now';if(s<3600) return Math.floor(s/60)+'m ago';
-  if(s<86400) return Math.floor(s/3600)+'h ago';if(s<604800) return Math.floor(s/86400)+'d ago';
-  return new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
-}
-function starStr(n){return '★'.repeat(n)+'☆'.repeat(5-n);}
-function avColor(i){const c=['linear-gradient(145deg,#3a7fc1,#1f5490)','linear-gradient(145deg,#2a9d8f,#1a7a6e)','linear-gradient(145deg,#7b5ea7,#5e3d8a)','linear-gradient(145deg,#c0504a,#8b2e2a)','linear-gradient(145deg,#d4a017,#a07010)','linear-gradient(145deg,#2d8a5e,#1a5e3e)'];return c[i%c.length];}
+/* ---- Render reviews ---- */
+window.pgRender = function() {
+  const sort = document.getElementById('pg-sort')?.value || 'newest';
+  let list = [...allRevs];
 
-window.pgRender = function(){
-  const sort=document.getElementById('pg-sort')?.value||'newest';
-  let list=[...allRevs];
-  if(sort==='top') list.sort((a,b)=>b.rating-a.rating);
-  if(sort==='lowest') list.sort((a,b)=>a.rating-b.rating);
+  // ✅ FIX 4: correct sort logic for all 3 modes
+  if (sort === 'top')    list.sort((a, b) => b.rating - a.rating);
+  else if (sort === 'lowest') list.sort((a, b) => a.rating - b.rating);
+  else list.sort((a, b) => (Number(b.ts) || 0) - (Number(a.ts) || 0));  // newest
 
-  const el=document.getElementById('rev-list');
-  const ct=document.getElementById('list-count');
-  if(ct) ct.textContent=list.length+' Patient Review'+(list.length!==1?'s':'');
+  const el = document.getElementById('rev-list');
+  const ct = document.getElementById('list-count');
+  if (ct) ct.textContent = list.length + ' Patient Review' + (list.length !== 1 ? 's' : '');
 
-  if(!list.length){
-    el.innerHTML='<div class="rev-empty"><p style="font-size:48px;margin-bottom:16px">🌿</p><p style="font-family:\'Cormorant Garamond\',serif;font-size:22px;font-weight:700;color:var(--th);margin-bottom:8px">No reviews yet</p><p style="font-size:15px">Be the first to share your experience!</p></div>';
+  if (!list.length) {
+    el.innerHTML = `<div class="rev-empty">
+      <p style="font-size:48px;margin-bottom:16px">🌿</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--th);margin-bottom:8px">No reviews yet</p>
+      <p style="font-size:15px">Be the first to share your experience!</p>
+    </div>`;
     return;
   }
 
-  const show=list.slice(0,showCount);
-  el.innerHTML=show.map((r,i)=>`
-    <div class="rcard${i===0?' newest':''}">
+  const show = list.slice(0, showCount);
+
+  el.innerHTML = show.map((r, i) => `
+    <div class="rcard${i === 0 ? ' newest' : ''}">
       <div class="rcard-top">
         <div class="rcard-av" style="background:${avColor(i)}">${getInitials(r.name)}</div>
         <div style="flex:1;min-width:0">
           <div class="rcard-nm">${r.name}</div>
-          <div class="rcard-meta"><span class="rcard-svc">${r.service}</span><span>· ${timeAgo(r.ts||Date.now())}</span></div>
+          <div class="rcard-meta">
+            <span class="rcard-svc">${r.service}</span>
+            <span>· ${timeAgo(Number(r.ts) || Date.now())}</span>
+          </div>
         </div>
         <div class="rcard-stars-row">
           <div class="rcard-stars">${starStr(r.rating)}</div>
-          ${i===0?'<span class="new-badge">NEWEST</span>':''}
+          ${i === 0 ? '<span class="new-badge">NEWEST</span>' : ''}
         </div>
       </div>
       <div class="rcard-txt">"${r.text}"</div>
     </div>
   `).join('');
 
-  const lmBtn=document.getElementById('load-more-btn');
-  if(lmBtn) lmBtn.style.display=list.length>showCount?'block':'none';
+  const lmBtn = document.getElementById('load-more-btn');
+  if (lmBtn) lmBtn.style.display = list.length > showCount ? 'block' : 'none';
 };
 
-window.loadMore=function(){
-  showCount+=8;
+/* ---- Load more ---- */
+window.loadMore = function() {
+  showCount += 20;
   pgRender();
 };
 
-function updateStats(){
-  const total=allRevs.length;
-  const avg=total?(allRevs.reduce((a,r)=>a+r.rating,0)/total):0;
-  const five=allRevs.filter(r=>r.rating===5).length;
-  const rec=total?Math.round(allRevs.filter(r=>r.rating>=4).length/total*100):0;
-  document.getElementById('st-total').textContent=total||'—';
-  document.getElementById('st-avg').textContent=total?avg.toFixed(1)+' ★':'—';
-  document.getElementById('st-five').textContent=total?five:'—';
-  document.getElementById('st-rec').textContent=total?rec+'%':'—';
+/* ---- Stats panel ---- */
+function updateStats() {
+  const total = allRevs.length;
+  const avg   = total ? allRevs.reduce((a, r) => a + r.rating, 0) / total : 0;
+  const five  = allRevs.filter(r => r.rating === 5).length;
+  const rec   = total ? Math.round(allRevs.filter(r => r.rating >= 4).length / total * 100) : 0;
+  document.getElementById('st-total').textContent = total || '—';
+  document.getElementById('st-avg').textContent   = total ? avg.toFixed(1) + ' ★' : '—';
+  document.getElementById('st-five').textContent  = total ? five : '—';
+  document.getElementById('st-rec').textContent   = total ? rec + '%' : '—';
 }
 
-function updateBars(){
-  const total=allRevs.length;
-  if(!total) return;
-  document.getElementById('barsCard').style.display='grid';
-  [5,4,3,2,1].forEach(n=>{
-    const cnt=allRevs.filter(r=>r.rating===n).length;
-    const pct=total?Math.round(cnt/total*100):0;
-    document.getElementById('bar'+n).style.width=pct+'%';
-    document.getElementById('bc'+n).textContent=cnt;
+/* ---- Rating bars ---- */
+function updateBars() {
+  const total = allRevs.length;
+  if (!total) return;
+  document.getElementById('barsCard').style.display = 'grid';
+  [5, 4, 3, 2, 1].forEach(n => {
+    const cnt = allRevs.filter(r => r.rating === n).length;
+    const pct = Math.round(cnt / total * 100);
+    document.getElementById('bar' + n).style.width = pct + '%';
+    document.getElementById('bc' + n).textContent  = cnt;
   });
 }
 
-window.pgStar=function(n){
-  pgStar_v=n;
-  document.querySelectorAll('#pg-stars .rstar').forEach((s,i)=>{
-    s.classList.toggle('lit',i<n);
-    s.style.transform=i<n?'scale(1.1)':'scale(1)';
+/* ---- Star selector ---- */
+window.pgStar = function(n) {
+  pgStar_v = n;
+  document.querySelectorAll('#pg-stars .rstar').forEach((s, i) => {
+    s.classList.toggle('lit', i < n);
+    s.style.transform = i < n ? 'scale(1.1)' : 'scale(1)';
   });
 };
 
-window.pgSubmit=async function(){
-  const name=document.getElementById('pg-name').value.trim();
-  const svc=document.getElementById('pg-svc').value;
-  const txt=document.getElementById('pg-txt').value.trim();
-  const msg=document.getElementById('pg-msg');
-  const btn=document.getElementById('pg-btn');
+/* ---- Submit review ---- */
+window.pgSubmit = async function() {
+  const name = document.getElementById('pg-name').value.trim();
+  const svc  = document.getElementById('pg-svc').value;
+  const txt  = document.getElementById('pg-txt').value.trim();
+  const msg  = document.getElementById('pg-msg');
+  const btn  = document.getElementById('pg-btn');
 
-  msg.className='sbmsg err';
-  if(!name){msg.textContent='Please enter your name.';return;}
-  if(!svc){msg.textContent='Please select a service.';return;}
-  if(!pgStar_v){msg.textContent='Please choose a star rating.';return;}
-  if(txt.length<12){msg.textContent='Please write at least 12 characters.';return;}
+  msg.className = 'sbmsg err';
+  if (!name)         { msg.textContent = 'Please enter your name.';           return; }
+  if (!svc)          { msg.textContent = 'Please select a service.';          return; }
+  if (!pgStar_v)     { msg.textContent = 'Please choose a star rating.';      return; }
+  if (txt.length < 12) { msg.textContent = 'Please write at least 12 characters.'; return; }
 
-  btn.disabled=true; btn.textContent='Posting…';
-  const entry={name,service:svc,rating:pgStar_v,text:txt,ts:Date.now()};
-  try{
-    if(revRef){ await push(revRef,{...entry,ts:serverTimestamp()}); }
-    else{ allRevs.unshift({id:'l'+Date.now(),...entry}); pgRender(); updateStats(); updateBars(); }
-    document.getElementById('pg-name').value='';
-    document.getElementById('pg-svc').value='';
-    document.getElementById('pg-txt').value='';
-    window.pgStar(0); pgStar_v=0;
-    msg.className='sbmsg ok';
-    msg.textContent='🎉 Thank you! Your review is now live for everyone to see.';
-    setTimeout(()=>msg.textContent='',5000);
-    document.getElementById('rev-list').scrollIntoView({behavior:'smooth',block:'start'});
-  }catch(e){
-    msg.className='sbmsg err';
-    msg.textContent='Could not post. Please check your connection.';
+  btn.disabled    = true;
+  btn.textContent = 'Posting…';
+
+  try {
+    if (revRef) {
+      // ✅ FIX 1: use Date.now() — NOT serverTimestamp() for RTDB numeric sort
+      await push(revRef, {
+        name,
+        service: svc,
+        rating:  pgStar_v,
+        text:    txt,
+        ts:      Date.now()
+      });
+    } else {
+      // Offline fallback
+      allRevs.unshift({ id: 'l' + Date.now(), name, service: svc, rating: pgStar_v, text: txt, ts: Date.now() });
+      pgRender(); updateStats(); updateBars();
+    }
+
+    /* Clear form */
+    document.getElementById('pg-name').value = '';
+    document.getElementById('pg-svc').value  = '';
+    document.getElementById('pg-txt').value  = '';
+    window.pgStar(0);
+    pgStar_v = 0;
+
+    msg.className   = 'sbmsg ok';
+    msg.textContent = '🎉 Thank you! Your review is now live for everyone to see.';
+    setTimeout(() => (msg.textContent = ''), 5000);
+    document.getElementById('rev-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (e) {
+    msg.className   = 'sbmsg err';
+    msg.textContent = 'Could not post. Please check your connection.';
   }
-  btn.disabled=false;
-  btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/></svg> Submit Review';
+
+  btn.disabled  = false;
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/></svg> Submit Review';
 };
+
+/* ---- Fallback data ---- */
+function loadFallback() {
+  document.getElementById('pg-fb-badge').className = 'fb-badge offline';
+  document.getElementById('pg-fb-badge').innerHTML = '<span class="fb-bdot"></span> Enable Realtime Database in Firebase console';
+  allRevs = [
+    { id:'f1', name:'Priya Sharma',    service:'IV Drip at Home',    rating:5, text:'The nurse arrived on time and was extremely professional. My mother recovered quickly thanks to the attentive care. Highly recommended to everyone!', ts: Date.now()-18000000 },
+    { id:'f2', name:'Rakesh Gupta',    service:'Wound Dressing',     rating:5, text:'Excellent wound care at home. Dr. Satyam guided the team very well. The dressing was done hygienically and completely painlessly.',                ts: Date.now()-43200000 },
+    { id:'f3', name:'Sunita Verma',    service:'Physiotherapy',      rating:4, text:'Very convenient physio sessions after my knee surgery. The therapist was patient, knowledgeable and always on time.',                               ts: Date.now()-86400000 },
+    { id:'f4', name:'Amit Srivastava', service:'Pathology Lab Tests', rating:5, text:'Wonderful service — sample collection done at home. Results came quickly. No need to go to the lab at all!',                                       ts: Date.now()-172800000 },
+    { id:'f5', name:'Meena Agarwal',   service:'Injection at Home',  rating:5, text:'Very professional and gentle. The nurse explained everything before the injection. My elderly father felt very comfortable.',                        ts: Date.now()-259200000 },
+    { id:'f6', name:'Vijay Kumar',     service:'Medical Equipment',  rating:4, text:'They delivered and set up the oxygen concentrator quickly. The team was responsive and helpful throughout.',                                         ts: Date.now()-345600000 },
+  ];
+  pgRender(); updateStats(); updateBars();
+}
+
+/* ---- Firebase init ---- */
+try {
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+  revRef    = ref(db, 'fn_reviews');
+
+  document.getElementById('pg-fb-badge').className = 'fb-badge live';
+  document.getElementById('pg-fb-badge').innerHTML = '<span class="fb-bdot"></span> Firebase Live · florenceclinic-92811';
+
+  onValue(revRef, snap => {
+    allRevs = [];
+    if (snap.exists()) {
+      snap.forEach(c => {
+        const val = c.val();
+        allRevs.push({
+          id:      c.key,
+          name:    val.name    || 'Anonymous',
+          service: val.service || 'Service',
+          rating:  Number(val.rating) || 0,
+          text:    val.text    || '',
+          ts:      typeof val.ts === 'number' ? val.ts : Date.now()
+        });
+      });
+    }
+    // ✅ FIX 2: safe numeric sort — newest first on load
+    allRevs.sort((a, b) => (Number(b.ts) || 0) - (Number(a.ts) || 0));
+    pgRender();
+    updateStats();
+    updateBars();
+  }, err => {
+    console.error('Firebase read error:', err);
+    loadFallback();
+  });
+} catch (e) {
+  console.error('Firebase init error:', e);
+  loadFallback();
+}
 </script>
 
+<!-- ===================== UI SCRIPT ===================== -->
 <script>
-window.addEventListener('scroll',()=>document.getElementById('nb').classList.toggle('sc',scrollY>28));
-const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target);}}),{threshold:.1});
-document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
-function toggleMenu(){
-  const ham=document.getElementById('ham'),menu=document.getElementById('mob-menu');
-  const open=ham.classList.toggle('open');
-  menu.classList.toggle('open',open);
-  document.body.style.overflow=open?'hidden':'';
+window.addEventListener('scroll', () => {
+  document.getElementById('nb').classList.toggle('sc', scrollY > 28);
+}, { passive: true });
+
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('v'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+function toggleMenu() {
+  const ham  = document.getElementById('ham');
+  const menu = document.getElementById('mob-menu');
+  const open = ham.classList.toggle('open');
+  menu.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
 }
-document.querySelectorAll('.mob-menu a').forEach(a=>a.addEventListener('click',()=>{
+
+document.querySelectorAll('.mob-menu a').forEach(a => a.addEventListener('click', () => {
   document.getElementById('ham').classList.remove('open');
   document.getElementById('mob-menu').classList.remove('open');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
 }));
 </script>
 </body>
