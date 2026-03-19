@@ -856,7 +856,9 @@ try{
   },err=>{console.error('Firebase read error:',err);loadFallback();});
 }catch(e){console.error('Firebase init error:',e);loadFallback();}
 
+// window.addEventListener('resize',()=>{buildCarousel();});
 window.addEventListener('resize',()=>{buildCarousel();});
+window.addEventListener('load',()=>{setTimeout(()=>{buildCarousel();},500);});
 </script>
 
 <script>
