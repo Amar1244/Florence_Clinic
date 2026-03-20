@@ -19,9 +19,6 @@ html{scroll-behavior:smooth}
 body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--tb);overflow-x:hidden;line-height:1.6;padding-top:68px}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--blue);border-radius:10px}
 
-/* ══════════════════════════
-   KEYFRAMES
-══════════════════════════ */
 @keyframes fu{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fly{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
@@ -35,14 +32,13 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--tb);overflow
 @keyframes pulse{0%,100%{box-shadow:0 4px 18px rgba(0,0,0,.15)}50%{box-shadow:0 4px 28px rgba(0,0,0,.28),0 0 0 8px rgba(255,255,255,.08)}}
 @keyframes rot{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes ecgd{from{stroke-dashoffset:1800}to{stroke-dashoffset:0}}
+@keyframes ringPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.45),0 0 0 6px rgba(255,255,255,.15)}50%{box-shadow:0 0 0 5px rgba(255,255,255,.22),0 0 0 10px rgba(255,255,255,.07)}}
 
 .rv{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
 .rv.v{opacity:1;transform:translateY(0)}
 .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
 
-/* ══════════════════════════
-   FLOATING BUTTONS
-══════════════════════════ */
+/* ══ FLOATING BUTTONS ══ */
 .floats{position:fixed;bottom:26px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:11px;align-items:flex-end}
 .fb{display:flex;align-items:center;gap:9px;padding:13px 20px;border-radius:50px;font-family:'Jost',sans-serif;font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .fb-wa{background:var(--green);color:#fff;box-shadow:0 4px 18px rgba(37,211,102,.4);animation:pulse 3s ease-in-out infinite}
@@ -50,9 +46,7 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--tb);overflow
 .fb-em{background:var(--red);color:#fff;box-shadow:0 4px 18px rgba(192,80,74,.4);animation:pulse 3s 1s ease-in-out infinite}
 .fb-em:hover{transform:scale(1.08) translateY(-2px)}
 
-/* ══════════════════════════
-   NAVBAR + HAMBURGER
-══════════════════════════ */
+/* ══ NAVBAR ══ */
 nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:68px;padding:0 52px;display:flex;align-items:center;justify-content:space-between;background:rgba(238,244,251,.97);backdrop-filter:blur(20px);border-bottom:1.5px solid var(--br);transition:box-shadow .3s}
 nav.sc{box-shadow:0 4px 26px var(--sh)}
 .nb{display:flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0}
@@ -64,14 +58,12 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .nl a:hover,.nl a.on{color:var(--blue2);background:var(--bluep);font-weight:700}
 .nwa{background:var(--green)!important;color:#fff!important;padding:9px 18px!important;border-radius:50px!important;display:flex!important;align-items:center;gap:7px;font-weight:700!important;font-size:13.5px!important}
 .nwa:hover{background:#1aaa50!important;transform:translateY(-1px)!important}
-/* Hamburger */
 .ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:none;background:transparent;z-index:1100;border-radius:8px;transition:background .2s}
 .ham:hover{background:var(--bluep)}
 .ham-line{display:block;width:24px;height:2.5px;background:var(--th);border-radius:4px;transition:all .35s cubic-bezier(.77,0,.175,1)}
 .ham.open .ham-line:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
 .ham.open .ham-line:nth-child(2){opacity:0;transform:scaleX(0)}
 .ham.open .ham-line:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
-/* Mobile drawer */
 .mob-menu{position:fixed;top:68px;left:0;right:0;background:rgba(238,244,251,.98);backdrop-filter:blur(22px);border-bottom:1.5px solid var(--br);z-index:999;padding:20px 22px 28px;transform:translateY(-110%);opacity:0;transition:transform .38s cubic-bezier(.77,0,.175,1),opacity .3s ease;box-shadow:0 12px 40px var(--sh)}
 .mob-menu.open{transform:translateY(0);opacity:1}
 .mob-menu ul{list-style:none;display:flex;flex-direction:column;gap:4px}
@@ -79,26 +71,18 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .mob-menu ul a:hover,.mob-menu ul a.on{color:var(--blue2);background:var(--bluep);border-color:var(--br)}
 .mob-wa{display:flex!important;align-items:center;gap:9px;background:var(--green)!important;color:#fff!important;border-radius:50px!important;padding:14px 20px!important;margin-top:10px;font-size:15px!important;border:none!important;justify-content:center}
 
-/* ══════════════════════════
-   SHARED
-══════════════════════════ */
+/* ══ SHARED ══ */
 .ey{font-size:12px;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;color:var(--blue2);display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .ey::before{content:'';width:26px;height:2.5px;background:var(--blue);border-radius:2px}
 .ey::after{content:'';width:6px;height:6px;background:var(--blue);border-radius:50%;opacity:.5}
 
-/* ══════════════════════════
-   PAGE HERO with BG ANIMATIONS
-══════════════════════════ */
+/* ══ PAGE HERO ══ */
 .ph{background:linear-gradient(150deg,#e4f0fc 0%,#d8e9f8 35%,#cce1f4 65%,#e2eef8 100%);padding:70px 52px 70px;position:relative;overflow:hidden;min-height:300px;display:flex;align-items:center}
-
-/* Watercolour blobs */
 .blob-bg{position:absolute;inset:0;pointer-events:none;z-index:0}
 .blob{position:absolute;border-radius:60% 40% 70% 30%/50% 60% 40% 70%;animation:blobPulse 8s ease-in-out infinite}
 .blob-1{width:500px;height:420px;top:-110px;right:-120px;background:radial-gradient(ellipse,rgba(160,210,245,.38) 0%,rgba(160,210,245,.06) 70%)}
 .blob-2{width:380px;height:340px;bottom:-80px;left:-80px;background:radial-gradient(ellipse,rgba(160,230,210,.3) 0%,rgba(160,230,210,.05) 70%);animation-delay:2s;border-radius:40% 60% 30% 70%}
 .blob-3{width:260px;height:240px;top:40%;left:42%;background:radial-gradient(ellipse,rgba(215,190,220,.18) 0%,rgba(215,190,220,.04) 70%);animation-delay:4s;border-radius:70% 30% 50% 50%}
-
-/* Floating medical items */
 .med-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
 .med-item{position:absolute;opacity:.07;filter:drop-shadow(0 4px 8px rgba(30,80,150,.14))}
 .med-item:nth-child(1){top:8%;left:4%;animation:float1 7s ease-in-out infinite}
@@ -107,8 +91,6 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .med-item:nth-child(4){bottom:15%;right:4%;animation:float1 11s ease-in-out infinite reverse}
 .med-item:nth-child(5){bottom:18%;left:14%;animation:float4 6s ease-in-out infinite}
 .med-item:nth-child(6){top:30%;right:18%;animation:float2 10s ease-in-out infinite}
-
-/* Falling leaves */
 .leaves-wrap{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .leaf{position:absolute;top:-30px;opacity:0;animation:leafFall linear infinite}
 .leaf:nth-child(1){left:8%;width:10px;height:10px;animation-duration:8s;animation-delay:0s}
@@ -116,26 +98,19 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .leaf:nth-child(3){left:48%;width:9px;height:9px;animation-duration:7s;animation-delay:4s}
 .leaf:nth-child(4){left:68%;width:11px;height:11px;animation-duration:12s;animation-delay:1s}
 .leaf:nth-child(5){left:84%;width:10px;height:10px;animation-duration:9s;animation-delay:3s}
-
-/* Rotating ring */
 .hr{position:absolute;top:50%;right:4%;transform:translateY(-50%);width:400px;height:400px;border:1.5px solid rgba(58,127,193,.1);border-radius:50%;pointer-events:none;animation:rot 70s linear infinite;z-index:0}
 .hr::after{content:'';position:absolute;top:28px;left:28px;right:28px;bottom:28px;border:1px solid rgba(58,127,193,.06);border-radius:50%}
-
-/* Hero content */
 .ph-in{max-width:1180px;margin:0 auto;position:relative;z-index:1;width:100%}
-
-/* Green cross badge */
 .ph-badge{display:inline-flex;align-items:center;gap:0;background:rgba(255,255,255,.92);border:1.5px solid rgba(34,197,94,.35);border-radius:50px;padding:0;font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue2);margin-bottom:22px;backdrop-filter:blur(8px);overflow:hidden;box-shadow:0 3px 14px rgba(34,197,94,.18)}
 .ph-badge-cross{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#22c55e,#16a34a);width:36px;height:36px;flex-shrink:0;border-radius:50px 0 0 50px}
 .ph-badge-cross svg{width:16px;height:16px}
 .ph-badge-text{padding:0 16px 0 12px;display:flex;align-items:center;gap:8px}
 .ph-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;animation:blink 1.5s infinite;flex-shrink:0}
-
 .ph h1{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,5vw,62px);font-weight:700;color:var(--th);margin-bottom:16px;line-height:1.08}
 .ph h1 em{font-style:italic;color:var(--blue)}
 .ph p{font-size:16.5px;color:var(--tb);max-width:520px;line-height:1.85;font-weight:400}
 
-/* ECG strip */
+/* ECG */
 .ecg{background:linear-gradient(90deg,var(--bg2),var(--bg3),var(--bg2));padding:11px 0;overflow:hidden}
 .ecg svg{width:100%;height:38px;display:block}
 .eg{stroke:rgba(58,127,193,.3);stroke-width:5;fill:none;stroke-dasharray:1800;stroke-dashoffset:1800;animation:ecgd 4s linear infinite;filter:blur(3px)}
@@ -151,12 +126,60 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 
 .dcard{background:rgba(255,255,255,.92);border:1.5px solid var(--br);border-radius:26px;overflow:hidden;transition:all .34s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 26px var(--sh)}
 .dcard:hover{transform:translateY(-10px);box-shadow:0 24px 60px var(--shl);border-color:var(--blue)}
-.dcard-top{background:linear-gradient(145deg,var(--blue),var(--blue2));padding:40px 34px;text-align:center;position:relative;overflow:hidden}
+.dcard-top{background:linear-gradient(145deg,var(--blue),var(--blue2));padding:40px 34px 34px;text-align:center;position:relative;overflow:hidden}
 .dcard-top::before{content:'';position:absolute;top:-40px;left:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(255,255,255,.14) 0%,transparent 70%);border-radius:50%}
 .dcard-top::after{content:'';position:absolute;bottom:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(255,255,255,.09) 0%,transparent 70%);border-radius:50%}
-.dav{width:96px;height:96px;margin:0 auto 18px;background:rgba(255,255,255,.22);border:3px solid rgba(255,255,255,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;z-index:1}
+
+/* ── PROFILE PHOTO CIRCLE ── */
+.dav{
+  width:110px;height:110px;
+  margin:0 auto 20px;
+  border-radius:50%;
+  position:relative;z-index:1;
+  overflow:hidden;
+  /* layered ring effect */
+  border:3px solid rgba(255,255,255,.55);
+  outline:4px solid rgba(255,255,255,.18);
+  box-shadow:
+    0 0 0 7px rgba(255,255,255,.12),
+    0 8px 28px rgba(0,0,0,.28);
+  animation:ringPulse 3s ease-in-out infinite;
+  background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+/* The actual <img> inside .dav */
+.dav img{
+  width:100%;height:100%;
+  object-fit:cover;
+  object-position:center top;
+  border-radius:50%;
+  display:block;
+  transition:transform .4s ease;
+}
+.dcard:hover .dav img{transform:scale(1.06)}
+/* Fallback emoji shown when no image */
+.dav .dav-fallback{
+  font-size:46px;
+  line-height:1;
+  user-select:none;
+}
+
+/* Camera-icon overlay — appears on hover to hint "click to change photo" */
+.dav-overlay{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(15,45,85,.55);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .28s ease;
+  pointer-events:none;
+}
+.dav:hover .dav-overlay{opacity:1}
+.dav-overlay svg{width:26px;height:26px;color:#fff}
+
 .dname{font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:700;color:#fff;margin-bottom:6px;position:relative;z-index:1}
 .drole{font-size:13.5px;color:rgba(255,255,255,.82);position:relative;z-index:1;font-weight:400}
+
+/* ── body ── */
 .dbody{padding:30px 32px}
 .dtags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
 .dtag{background:var(--bluep);border:1px solid var(--br);border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;color:var(--blue2)}
@@ -171,9 +194,7 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .dl-main{display:block;font-size:13.5px;font-weight:700}
 .dl-sub{display:block;font-size:12px;opacity:.72;font-weight:400}
 
-/* ══════════════════════════
-   SPECIALTIES
-══════════════════════════ */
+/* ══ SPECIALTIES ══ */
 .spec-sec{background:var(--bg2);padding:68px 52px;position:relative;overflow:hidden}
 .spec-sec::before{content:'';position:absolute;bottom:-80px;left:-60px;width:380px;height:340px;background:radial-gradient(ellipse,rgba(160,230,210,.12) 0%,transparent 70%);border-radius:40% 60% 30% 70%;pointer-events:none;animation:blobPulse 13s ease-in-out infinite reverse}
 .spec-sec-in{max-width:1180px;margin:0 auto;position:relative;z-index:1}
@@ -185,9 +206,7 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .sp-em{font-size:32px;margin-bottom:12px;display:block}
 .sp-p{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--th);transition:color .25s}
 
-/* ══════════════════════════
-   AVAILABILITY PANEL — Light Pink
-══════════════════════════ */
+/* ══ AVAILABILITY ══ */
 .avail-sec{background:linear-gradient(135deg,#fce4ec,#f8bbd0,#f48fb1);padding:72px 52px;text-align:center;position:relative;overflow:hidden}
 .avail-sec::before{content:'';position:absolute;top:-80px;right:-80px;width:280px;height:280px;background:radial-gradient(circle,rgba(255,255,255,.3) 0%,transparent 70%);border-radius:50%;pointer-events:none}
 .avail-sec::after{content:'';position:absolute;bottom:-60px;left:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(255,255,255,.22) 0%,transparent 70%);border-radius:50%;pointer-events:none}
@@ -200,9 +219,7 @@ nav.sc{box-shadow:0 4px 26px var(--sh)}
 .btn-wa{background:var(--green);color:#fff;padding:13px 28px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .27s;box-shadow:0 4px 16px rgba(37,211,102,.3)}
 .btn-wa:hover{transform:translateY(-3px);background:#1ab854;box-shadow:0 10px 28px rgba(37,211,102,.45)}
 
-/* ══════════════════════════
-   FOOTER — Deep Teal
-══════════════════════════ */
+/* ══ FOOTER ══ */
 footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 52px 28px}
 .ftin{max-width:1180px;margin:0 auto}
 .ftg{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:44px;margin-bottom:44px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.1)}
@@ -215,9 +232,7 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
 .ftul a:hover{color:#fff}
 .ftbot{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;color:rgba(255,255,255,.5)}
 
-/* ══════════════════════════
-   RESPONSIVE
-══════════════════════════ */
+/* ══ RESPONSIVE ══ */
 @media(max-width:960px){
   nav{padding:0 18px}
   .nl{display:none}
@@ -347,10 +362,26 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
   <div class="team-sec-in">
     <div class="team-grid">
 
-      <!-- Dr. Satyam -->
+      <!-- ══ Dr. Satyam ══
+           HOW TO ADD PHOTO:
+           Replace the <span class="dav-fallback">👨‍⚕️</span> line with:
+           <img src="images/dr-satyam.jpg" alt="Dr. Satyam Srivastava">
+           Make sure the image is square or portrait for best results.
+      -->
       <div class="dcard rv d1">
         <div class="dcard-top">
-          <div class="dav">👨‍⚕️</div>
+          <div class="dav">
+            <!-- ▼▼ SWAP THIS WITH YOUR PHOTO ▼▼ -->
+            <!-- <img src="images/dr-satyam.jpg" alt="Dr. Satyam Srivastava"> -->
+            <span class="dav-fallback">👨‍⚕️</span>
+            <!-- ▲▲ ─────────────────────────── ▲▲ -->
+            <div class="dav-overlay">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+          </div>
           <div class="dname">Dr. Satyam Srivastava</div>
           <div class="drole">Doctor in Pharmacy · CMS & ED · EMT</div>
         </div>
@@ -375,10 +406,25 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
         </div>
       </div>
 
-      <!-- Subham Singh -->
+      <!-- ══ Subham Singh ══
+           HOW TO ADD PHOTO:
+           Replace the <span class="dav-fallback">👨‍🔬</span> line with:
+           <img src="images/subham-singh.jpg" alt="Subham Singh">
+      -->
       <div class="dcard rv d2">
         <div class="dcard-top">
-          <div class="dav">👨‍🔬</div>
+          <div class="dav">
+            <!-- ▼▼ SWAP THIS WITH YOUR PHOTO ▼▼ -->
+            <!-- <img src="images/subham-singh.jpg" alt="Subham Singh"> -->
+            <span class="dav-fallback">👨‍🔬</span>
+            <!-- ▲▲ ─────────────────────────── ▲▲ -->
+            <div class="dav-overlay">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+          </div>
           <div class="dname">Subham Singh</div>
           <div class="drole">Pharmacist · Medication Expert</div>
         </div>
@@ -425,7 +471,7 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
   </div>
 </div>
 
-<!-- ════════ AVAILABILITY — Light Pink ════════ -->
+<!-- ════════ AVAILABILITY ════════ -->
 <div class="avail-sec">
   <div class="avail-in rv">
     <h2>Available 24/7 for You</h2>
@@ -440,7 +486,7 @@ footer{background:linear-gradient(145deg,#0d4a4a,#083535,#052828);padding:60px 5
   </div>
 </div>
 
-<!-- ════════ FOOTER — Deep Teal ════════ -->
+<!-- ════════ FOOTER ════════ -->
 <footer>
   <div class="ftin">
     <div class="ftg">
