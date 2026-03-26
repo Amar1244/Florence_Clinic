@@ -1541,5 +1541,286 @@ dnaObs.observe(document.getElementById('dnaSec'));
   }
 })();
 </script>
+
+<!-- CHATBOT WIDGET -->
+<style>
+.cb-btn{position:fixed;bottom:90px;left:22px;z-index:9998;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#3a7fc1,#1f5490);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(31,84,144,.4);transition:all .3s}
+.cb-btn:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(31,84,144,.5)}
+.cb-btn svg{width:26px;height:26px}
+.cb-btn.hide{opacity:0;visibility:hidden;transform:scale(0)}
+
+.cb-win{position:fixed;bottom:90px;left:22px;z-index:9999;width:340px;max-height:480px;background:#fff;border-radius:20px;box-shadow:0 12px 50px rgba(0,0,0,.22);overflow:hidden;transform:scale(0) translateY(20px);transform-origin:bottom left;opacity:0;visibility:hidden;transition:all .35s cubic-bezier(.34,1.56,.64,1);display:flex;flex-direction:column}
+.cb-win.open{transform:scale(1) translateY(0);opacity:1;visibility:visible}
+
+.cb-head{background:linear-gradient(135deg,#1f5490,#3a7fc1);padding:16px 18px;display:flex;align-items:center;gap:12px;position:relative}
+.cb-head-av{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cb-head-info h4{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#fff;line-height:1.2}
+.cb-head-info p{font-size:10.5px;color:rgba(255,255,255,.75)}
+.cb-head-dot{width:8px;height:8px;background:#22c55e;border-radius:50%;position:absolute;top:18px;left:46px;border:2px solid #1f5490}
+.cb-x{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1}
+.cb-x:hover{background:rgba(255,255,255,.3)}
+
+.cb-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#f0f4f8;min-height:280px;max-height:340px}
+.cb-body::-webkit-scrollbar{width:4px}.cb-body::-webkit-scrollbar-thumb{background:#c5dcf0;border-radius:4px}
+
+.cb-msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.55;animation:cbSlide .3s ease}
+@keyframes cbSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.cb-bot{background:#fff;color:#122d4a;border-radius:14px 14px 14px 4px;align-self:flex-start;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.cb-user{background:linear-gradient(135deg,#3a7fc1,#1f5490);color:#fff;border-radius:14px 14px 4px 14px;align-self:flex-end}
+
+.cb-typing{align-self:flex-start;background:#fff;border-radius:14px;padding:10px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;gap:4px}
+.cb-dot{width:7px;height:7px;background:#b0c4d8;border-radius:50%;animation:cbDots 1.2s ease-in-out infinite}
+.cb-dot:nth-child(2){animation-delay:.2s}.cb-dot:nth-child(3){animation-delay:.4s}
+@keyframes cbDots{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+.cb-input-area{padding:12px;background:#fff;border-top:1px solid #e4eef8;display:flex;gap:8px;align-items:center}
+.cb-input{flex:1;border:1.5px solid #dce8f5;border-radius:50px;padding:10px 16px;font-family:'Jost',sans-serif;font-size:13px;outline:none;transition:border-color .2s;color:#122d4a}
+.cb-input:focus{border-color:#3a7fc1}
+.cb-input::placeholder{color:#8ea8c4}
+.cb-send{width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg,#3a7fc1,#1f5490);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.cb-send:hover{transform:scale(1.08)}
+.cb-send:disabled{opacity:.4;cursor:default;transform:none}
+
+.cb-opts{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start;animation:cbSlide .3s ease}
+.cb-opt{background:#fff;border:1.5px solid #dce8f5;border-radius:50px;padding:7px 14px;font-family:'Jost',sans-serif;font-size:12px;font-weight:600;color:#1f5490;cursor:pointer;transition:all .2s}
+.cb-opt:hover{background:#dcedf9;border-color:#3a7fc1}
+
+@media(max-width:560px){
+  .cb-win{width:calc(100vw - 24px);left:12px;bottom:80px;max-height:420px}
+  .cb-btn{bottom:80px;left:14px;width:50px;height:50px}
+}
+</style>
+
+<!-- Chat button -->
+<button class="cb-btn" id="cbBtn" aria-label="Open chat assistant">
+  <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+    <!-- Head -->
+    <rect x="12" y="10" width="40" height="32" rx="10" fill="white"/>
+    <!-- Eyes -->
+    <circle cx="25" cy="26" r="4" fill="#1f5490"/>
+    <circle cx="39" cy="26" r="4" fill="#1f5490"/>
+    <circle cx="26.2" cy="24.8" r="1.3" fill="#fff"/>
+    <circle cx="40.2" cy="24.8" r="1.3" fill="#fff"/>
+    <!-- Smile -->
+    <path d="M24 33 Q32 39 40 33" stroke="#1f5490" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <!-- Stethoscope on head -->
+    <circle cx="32" cy="8" r="5" fill="#25d366" stroke="white" stroke-width="1.5"/>
+    <path d="M29 8 h6 M32 5.5 v5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Antenna -->
+    <line x1="32" y1="3" x2="32" y2="1" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="32" cy="0" r="1.5" fill="#25d366"/>
+    <!-- Ears/Side sensors -->
+    <rect x="6" y="22" width="6" height="10" rx="3" fill="white" opacity=".7"/>
+    <rect x="52" y="22" width="6" height="10" rx="3" fill="white" opacity=".7"/>
+    <!-- Body hint -->
+    <path d="M22 42 Q32 50 42 42" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <!-- Heartbeat on body -->
+    <path d="M26 46 L29 46 L31 43 L33 49 L35 46 L38 46" stroke="#ff6b6b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </svg>
+</button>
+
+<!-- Chat window -->
+<div class="cb-win" id="cbWin">
+  <div class="cb-head">
+    <div class="cb-head-av">
+      <svg viewBox="0 0 40 40" width="28" height="28" fill="none">
+        <rect x="5" y="6" width="30" height="24" rx="8" fill="white"/>
+        <circle cx="15" cy="18" r="3" fill="#1f5490"/><circle cx="25" cy="18" r="3" fill="#1f5490"/>
+        <circle cx="15.8" cy="16.8" r="1" fill="#fff"/><circle cx="25.8" cy="16.8" r="1" fill="#fff"/>
+        <path d="M14 24 Q20 28.5 26 24" stroke="#1f5490" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <circle cx="20" cy="4.5" r="3.5" fill="#25d366"/><path d="M18 4.5h4M20 2.5v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="cb-head-dot"></div>
+    <div class="cb-head-info">
+      <h4>Florence Assistant</h4>
+      <p>Online · Replies instantly</p>
+    </div>
+    <button class="cb-x" id="cbClose" aria-label="Close chat">&#10005;</button>
+  </div>
+  <div class="cb-body" id="cbBody"></div>
+  <div class="cb-input-area" id="cbInputArea">
+    <input type="text" class="cb-input" id="cbInput" placeholder="Type your answer..." autocomplete="off">
+    <button class="cb-send" id="cbSend" aria-label="Send message">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const btn = document.getElementById('cbBtn');
+  const win = document.getElementById('cbWin');
+  const closeBtn = document.getElementById('cbClose');
+  const body = document.getElementById('cbBody');
+  const input = document.getElementById('cbInput');
+  const sendBtn = document.getElementById('cbSend');
+  const inputArea = document.getElementById('cbInputArea');
+
+  const steps = [
+    {q: "Hello! 👋 Welcome to Florence Nightingale Nursing.\n\nHow can I help you today?", type:'options', opts:['Lab Test','Home Nursing','Doctor Consultation','Online Consultation','Other']},
+    {q: "Great choice! May I know your name?", type:'text', key:'name'},
+    {q: "Thanks, {name}! What's your phone number?", type:'text', key:'phone', placeholder:'e.g. 9876543210'},
+    {q: "Which area/locality are you from?", type:'text', key:'area', placeholder:'e.g. Raj Nagar Extension'},
+    {q: "Any specific concern or message you'd like to share?", type:'text', key:'message', placeholder:'Optional — type or press send to skip'},
+    {q: "Perfect! Here's what I have:\n\n📋 Service: {service}\n👤 Name: {name}\n📱 Phone: {phone}\n📍 Area: {area}\n💬 Message: {message}\n\nShall I send this to our team on WhatsApp?", type:'options', opts:['Send to WhatsApp ✅','Start Over 🔄']}
+  ];
+
+  let current = 0;
+  let data = {service:'', name:'', phone:'', area:'', message:''};
+
+  function fillTemplate(str){
+    return str.replace(/\{(\w+)\}/g, function(m,k){ return data[k]||'—'; });
+  }
+
+  function addMsg(text, who){
+    const d = document.createElement('div');
+    d.className = 'cb-msg ' + who;
+    d.textContent = text;
+    // handle newlines
+    d.innerHTML = text.replace(/\n/g,'<br>');
+    body.appendChild(d);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function showTyping(){
+    const t = document.createElement('div');
+    t.className='cb-typing';t.id='cbTyping';
+    t.innerHTML='<span class="cb-dot"></span><span class="cb-dot"></span><span class="cb-dot"></span>';
+    body.appendChild(t);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function hideTyping(){
+    const t = document.getElementById('cbTyping');
+    if(t) t.remove();
+  }
+
+  function showOptions(opts){
+    const wrap = document.createElement('div');
+    wrap.className='cb-opts';wrap.id='cbOpts';
+    opts.forEach(function(o){
+      const b = document.createElement('button');
+      b.className='cb-opt';b.textContent=o;
+      b.addEventListener('click',function(){handleOption(o);});
+      wrap.appendChild(b);
+    });
+    body.appendChild(wrap);
+    body.scrollTop = body.scrollHeight;
+    inputArea.style.display='none';
+  }
+
+  function removeOpts(){
+    const o = document.getElementById('cbOpts');
+    if(o) o.remove();
+    inputArea.style.display='flex';
+  }
+
+  function askStep(){
+    var step = steps[current];
+    showTyping();
+    setTimeout(function(){
+      hideTyping();
+      addMsg(fillTemplate(step.q), 'cb-bot');
+      if(step.type==='options'){
+        showOptions(step.opts);
+      } else {
+        inputArea.style.display='flex';
+        input.placeholder = step.placeholder || 'Type your answer...';
+        input.focus();
+      }
+    }, 800);
+  }
+
+  function handleOption(val){
+    removeOpts();
+    addMsg(val, 'cb-user');
+
+    if(current===0){
+      data.service = val;
+      current = 1;
+      askStep();
+    } else if(current===steps.length-1){
+      if(val.indexOf('Send')!==-1){
+        sendToWhatsApp();
+      } else {
+        resetChat();
+      }
+    }
+  }
+
+  function handleText(){
+    var val = input.value.trim();
+    var step = steps[current];
+
+    // Allow skip on message step
+    if(!val && step.key!=='message') return;
+    if(!val && step.key==='message') val = 'No specific message';
+
+    // Validate phone
+    if(step.key==='phone'){
+      var clean = val.replace(/[^0-9]/g,'');
+      if(clean.length<10){
+        addMsg(val, 'cb-user');
+        showTyping();
+        setTimeout(function(){
+          hideTyping();
+          addMsg('Please enter a valid 10-digit phone number 📱', 'cb-bot');
+          input.value='';input.focus();
+        },500);
+        return;
+      }
+    }
+
+    addMsg(val, 'cb-user');
+    data[step.key] = val;
+    input.value = '';
+    current++;
+    askStep();
+  }
+
+  function sendToWhatsApp(){
+    var msg = '🏥 *New Enquiry — Florence Nightingale Nursing*\n\n' +
+      '📋 *Service:* ' + data.service + '\n' +
+      '👤 *Name:* ' + data.name + '\n' +
+      '📱 *Phone:* ' + data.phone + '\n' +
+      '📍 *Area:* ' + data.area + '\n' +
+      '💬 *Message:* ' + data.message;
+
+    var url = 'https://wa.me/917270945129?text=' + encodeURIComponent(msg);
+
+    showTyping();
+    setTimeout(function(){
+      hideTyping();
+      addMsg('Redirecting you to WhatsApp... ✅\nThank you for choosing Florence Nightingale Nursing! 🙏', 'cb-bot');
+      setTimeout(function(){ window.open(url, '_blank'); }, 800);
+    }, 600);
+  }
+
+  function resetChat(){
+    current = 0;
+    data = {service:'', name:'', phone:'', area:'', message:''};
+    body.innerHTML = '';
+    askStep();
+  }
+
+  // Send on button click or Enter
+  sendBtn.addEventListener('click', handleText);
+  input.addEventListener('keydown', function(e){
+    if(e.key==='Enter') handleText();
+  });
+
+  // Toggle chat
+  btn.addEventListener('click', function(){
+    win.classList.add('open');
+    btn.classList.add('hide');
+    if(body.children.length===0) askStep();
+  });
+  closeBtn.addEventListener('click', function(){
+    win.classList.remove('open');
+    btn.classList.remove('hide');
+  });
+})();
+</script>
 </body>
 </html>
