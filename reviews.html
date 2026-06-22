@@ -638,7 +638,7 @@ try {
   const db  = getDatabase(app);
   revRef    = ref(db, 'fn_reviews');
   document.getElementById('pg-fb-badge').className = 'fb-badge live';
-  document.getElementById('pg-fb-badge').innerHTML = '<span class="fb-bdot"></span> Firebase Live · florenceclinic-92811';
+  document.getElementById('pg-fb-badge').innerHTML = '<span class="fb-bdot"></span> Firebase Live ·';
   onValue(revRef, snap => {
     allRevs = [];
     if (snap.exists()) {
