@@ -38,22 +38,6 @@ The site lets patients and families find the clinic's home-care services, see la
 - HTML, CSS and JavaScript (static site, no build step)
 - Deployed on [Vercel](https://vercel.com) (`vercel.json` enables clean URLs)
 
-## Run Locally
-
-```bash
-git clone https://github.com/Amar1244/Florence_Clinic.git
-cd Florence_Clinic
-
-# any static server works, for example:
-python -m http.server 8000
-```
-
-Then open <http://localhost:8000>.
-
-## Deployment
-
-Pushes to `main` deploy automatically on Vercel. No build command or output directory is needed.
-
 ## Author
 
 **Amar Chaurasiya**, open to full-time roles and freelance work.
